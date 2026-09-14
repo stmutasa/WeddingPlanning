@@ -1,0 +1,522 @@
+<title>Nairobi 2027 Lookbook</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root {
+    --bg: #F3F1EC;
+    --surface: #FFFFFF;
+    --ink: #201D1A;
+    --ink-2: #6A645C;
+    --line: rgba(32, 29, 26, 0.12);
+    --accent: #3F5E4A;
+    --accent-soft: rgba(63, 94, 74, 0.12);
+    --chip: #E9E5DD;
+    --focus: #3F5E4A;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17161A;
+      --surface: #201F24;
+      --ink: #EEEBE6;
+      --ink-2: #A29C93;
+      --line: rgba(238, 235, 230, 0.14);
+      --accent: #9DC2A8;
+      --accent-soft: rgba(157, 194, 168, 0.16);
+      --chip: #2A292F;
+      --focus: #9DC2A8;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17161A;
+    --surface: #201F24;
+    --ink: #EEEBE6;
+    --ink-2: #A29C93;
+    --line: rgba(238, 235, 230, 0.14);
+    --accent: #9DC2A8;
+    --accent-soft: rgba(157, 194, 168, 0.16);
+    --chip: #2A292F;
+    --focus: #9DC2A8;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Figtree", system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    padding-inline: 16px;
+    padding-block: 32px 64px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  h1, h2, h3 { margin: 0; text-wrap: balance; }
+  h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+  h3 { font-size: 16px; font-weight: 600; }
+  p { margin: 0; max-width: 62ch; }
+  .muted { color: var(--ink-2); }
+  .eyebrow {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-2);
+  }
+  .intro { display: grid; gap: 12px; margin-bottom: 40px; }
+  .intro p { font-size: 16px; }
+  section { margin-bottom: 48px; }
+  .sec-head { display: grid; gap: 6px; margin-bottom: 18px; }
+
+  /* Names */
+  .names { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+  .name-btn {
+    text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 16px; cursor: pointer; color: var(--ink); font: inherit; display: grid; gap: 4px;
+  }
+  .name-btn strong { font-size: 20px; letter-spacing: -0.01em; }
+  .name-btn span { font-size: 13px; color: var(--ink-2); }
+  .name-btn[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-soft); }
+  .name-btn:focus-visible, .pick-btn:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: 2px solid var(--focus); outline-offset: 2px;
+  }
+  .hint { font-size: 13px; color: var(--ink-2); margin-top: 10px; }
+
+  /* Directions */
+  .dir { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 28px; align-items: start; padding-block: 28px; border-top: 1px solid var(--line); }
+  .dir:last-of-type { border-bottom: 1px solid var(--line); }
+  .dir-copy { display: grid; gap: 16px; }
+  .dir-copy .lede { font-size: 16px; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sw { display: grid; gap: 4px; font-size: 11px; color: var(--ink-2); width: 72px; }
+  .sw i { display: block; height: 40px; border-radius: 8px; border: 1px solid var(--line); }
+  .sw b { font-weight: 600; color: var(--ink); font-size: 11px; }
+  .specimen { display: grid; gap: 6px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .specimen .s-label { font-size: 11px; color: var(--ink-2); }
+  .traits { display: grid; gap: 6px; padding-left: 18px; margin: 0; }
+  .traits li { max-width: 60ch; }
+  .traits li::marker { color: var(--accent); }
+  .lineage { font-size: 13px; color: var(--ink-2); }
+
+  /* Phone frame */
+  .phone-wrap { display: grid; gap: 8px; justify-items: center; }
+  .phone {
+    width: 360px; max-width: 100%; height: 720px; border-radius: 40px; padding: 12px;
+    background: #111; box-shadow: 0 20px 60px rgba(0,0,0,0.28); overflow: hidden;
+  }
+  .screen { width: 100%; height: 100%; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; }
+  .scroll { flex: 1; overflow: hidden; padding: 14px 16px 0; display: grid; gap: 14px; align-content: start; }
+  .example { font-size: 12px; color: var(--ink-2); }
+
+  /* --- shared mock structure, themed per direction via variables --- */
+  .screen { background: var(--m-bg); color: var(--m-ink); font-family: var(--m-body); }
+  .m-status { height: 22px; display: flex; justify-content: space-between; align-items: center; padding: 8px 22px 0; font-size: 12px; font-weight: 600; color: var(--m-ink); }
+  .m-head { display: grid; gap: 2px; }
+  .m-mark { font-family: var(--m-display); font-size: var(--m-mark-size); font-weight: var(--m-mark-weight); letter-spacing: var(--m-mark-ls); line-height: 1; color: var(--m-ink); }
+  .m-sub { font-size: 12px; color: var(--m-sub); }
+  .m-card { background: var(--m-card); border: 1px solid var(--m-line); border-radius: var(--m-radius); padding: 14px; box-shadow: var(--m-shadow); }
+  .m-label { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--m-sub); margin-bottom: 8px; }
+  .m-big { font-family: var(--m-num); font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--m-ink); }
+  .m-big small { font-size: 13px; font-weight: 500; color: var(--m-sub); letter-spacing: 0; font-family: var(--m-body); }
+  .m-bar { height: 8px; border-radius: 99px; background: var(--m-track); overflow: hidden; margin-top: 10px; }
+  .m-bar i { display: block; height: 100%; width: 13%; background: var(--m-accent); border-radius: 99px; }
+  .m-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--m-line); font-size: 13px; }
+  .m-row:first-of-type { border-top: 0; padding-top: 0; }
+  .m-row .t { font-weight: 600; }
+  .m-row .n { font-family: var(--m-num); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .m-row .s { font-size: 11.5px; color: var(--m-sub); grid-column: 1 / -1; }
+  .m-env { display: grid; gap: 8px; }
+  .m-env-row { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: 12.5px; }
+  .m-env-row .n { font-family: var(--m-num); font-variant-numeric: tabular-nums; color: var(--m-sub); }
+  .m-env-row .m-bar { grid-column: 1 / -1; margin-top: 4px; height: 5px; }
+  .m-chip { display: inline-block; font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 99px; line-height: 1.5; }
+  .m-chip.a { background: var(--m-hue-a-soft); color: var(--m-hue-a); }
+  .m-chip.s { background: var(--m-hue-s-soft); color: var(--m-hue-s); }
+  .m-count { display: flex; align-items: baseline; gap: 6px; font-size: 13px; color: var(--m-sub); }
+  .m-count b { font-family: var(--m-num); font-size: 22px; color: var(--m-ink); font-variant-numeric: tabular-nums; }
+  .m-tabs { display: grid; grid-template-columns: repeat(5, 1fr); padding: 10px 6px 18px; border-top: 1px solid var(--m-line); background: var(--m-tabbar); font-size: 10px; font-weight: 500; color: var(--m-sub); text-align: center; }
+  .m-tabs span { display: grid; gap: 4px; justify-items: center; }
+  .m-tabs svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .m-tabs .on { color: var(--m-accent); font-weight: 600; }
+  .m-tabs .fab { color: var(--m-on-accent); }
+  .m-tabs .fab b { width: 40px; height: 40px; border-radius: 99px; background: var(--m-accent); display: grid; place-items: center; margin-top: -18px; box-shadow: var(--m-shadow); }
+  .m-tabs .fab svg { stroke: var(--m-on-accent); }
+
+  /* Direction A — Stationery */
+  .dir-a .screen {
+    --m-bg: #F1EDE5; --m-card: #FAF7F1; --m-ink: #2E1C19; --m-sub: #5C4F4B; --m-line: rgba(46,28,25,0.14);
+    --m-accent: #797049; --m-on-accent: #F1EDE5; --m-track: #E1D9CC; --m-tabbar: #FAF7F1; --m-shadow: none;
+    --m-radius: 4px; --m-display: "Cormorant Garamond", Georgia, serif; --m-body: "Inter", system-ui, sans-serif; --m-num: "Inter", system-ui, sans-serif;
+    --m-mark-size: 34px; --m-mark-weight: 500; --m-mark-ls: 0;
+    --m-hue-a: #8A4B5E; --m-hue-a-soft: rgba(138,75,94,0.14); --m-hue-s: #4E5F7A; --m-hue-s-soft: rgba(78,95,122,0.14);
+  }
+  .dir-a .m-mark { font-style: italic; }
+  .dir-a .m-big { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-size: 40px; }
+  .dir-a .m-label { font-family: "Inter", sans-serif; letter-spacing: 0.14em; }
+
+  /* Direction B — Kanga */
+  .dir-b .screen {
+    --m-bg: #F6F1E7; --m-card: #FFFDF8; --m-ink: #191512; --m-sub: #6B5F55; --m-line: rgba(25,21,18,0.14);
+    --m-accent: #1F2A6B; --m-on-accent: #F6F1E7; --m-track: #E7DFCF; --m-tabbar: #1F2A6B; --m-shadow: none;
+    --m-radius: 10px; --m-display: "Syne", system-ui, sans-serif; --m-body: "DM Sans", system-ui, sans-serif; --m-num: "DM Sans", system-ui, sans-serif;
+    --m-mark-size: 30px; --m-mark-weight: 800; --m-mark-ls: -0.03em;
+    --m-hue-a: #B8312F; --m-hue-a-soft: rgba(184,49,47,0.14); --m-hue-s: #1F2A6B; --m-hue-s-soft: rgba(31,42,107,0.13);
+  }
+  .dir-b .m-mark { text-transform: uppercase; }
+  .dir-b .m-card { border: 2px solid var(--m-ink); border-radius: 10px; }
+  .dir-b .m-card.budget { background: #1F2A6B; color: #F6F1E7; border-color: #1F2A6B; --m-ink: #F6F1E7; --m-sub: #C9CDE6; --m-track: rgba(246,241,231,0.22); --m-accent: #E8A317; }
+  .dir-b .m-tabs { color: #C9CDE6; border-top: 0; }
+  .dir-b .m-tabs .on { color: #E8A317; }
+  .dir-b .m-tabs .fab b { background: #E8A317; }
+  .dir-b .m-tabs .fab svg { stroke: #191512; }
+  .dir-b .m-bar i { background: #E8A317; }
+  .dir-b .m-env-row .m-bar i { background: #B8312F; }
+  .kanga-band { height: 14px; background: repeating-linear-gradient(90deg, #B8312F 0 10px, #F6F1E7 10px 14px, #1F2A6B 14px 24px, #F6F1E7 24px 28px, #E8A317 28px 38px, #F6F1E7 38px 42px); }
+  .kanga-jina { font-family: "Syne", sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #B8312F; text-align: center; padding: 6px 0 0; }
+
+  /* Direction C — Ledger */
+  .dir-c .screen {
+    --m-bg: #0E1116; --m-card: #171B22; --m-ink: #EEF0F3; --m-sub: #98A0AC; --m-line: rgba(255,255,255,0.08);
+    --m-accent: #E0A24A; --m-on-accent: #1C1106; --m-track: #242A33; --m-tabbar: #12161D; --m-shadow: 0 6px 24px rgba(0,0,0,0.35);
+    --m-radius: 20px; --m-display: "Manrope", system-ui, sans-serif; --m-body: "Manrope", system-ui, sans-serif; --m-num: "IBM Plex Mono", ui-monospace, monospace;
+    --m-mark-size: 26px; --m-mark-weight: 800; --m-mark-ls: -0.03em;
+    --m-hue-a: #F783AC; --m-hue-a-soft: rgba(247,131,172,0.16); --m-hue-s: #6EA8FF; --m-hue-s-soft: rgba(110,168,255,0.16);
+  }
+  .dir-c .m-card { border: 1px solid var(--m-line); }
+  .dir-c .m-card.budget { background: linear-gradient(135deg, rgba(255,180,84,0.18), rgba(255,107,107,0.14)), #171B22; }
+  .dir-c .m-bar i { background: linear-gradient(90deg, #FFB454, #FF6B6B); }
+  .dir-c .m-big { font-weight: 600; }
+
+  /* Picks */
+  .picks { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .pick-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 14px; }
+  .pick-card h3 { font-size: 18px; }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pick-btn { font: inherit; font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 99px; border: 1px solid var(--line); background: var(--chip); color: var(--ink); cursor: pointer; }
+  .pick-btn[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+  :root[data-theme="dark"] .pick-btn[aria-pressed="true"] { color: #17161A; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pick-btn[aria-pressed="true"] { color: #17161A; } }
+  .field { display: grid; gap: 6px; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+  textarea { font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); resize: vertical; min-height: 70px; }
+  .save { font: inherit; font-weight: 600; font-size: 15px; padding: 12px 18px; border-radius: 12px; border: 0; background: var(--accent); color: #fff; cursor: pointer; }
+  :root[data-theme="dark"] .save { color: #17161A; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .save { color: #17161A; } }
+  .save[disabled] { opacity: 0.5; cursor: default; }
+  .status { font-size: 13px; color: var(--ink-2); min-height: 20px; }
+  .tally { display: grid; gap: 8px; padding: 16px 18px; border: 1px dashed var(--line); border-radius: 14px; font-size: 14px; }
+  .tally div { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tally b { min-width: 72px; }
+
+  @media (max-width: 820px) {
+    .dir { grid-template-columns: 1fr; }
+    .phone-wrap { order: -1; }
+  }
+  @media (max-width: 420px) {
+    .phone { height: 680px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .name-btn, .pick-btn { transition: background 120ms ease, border-color 120ms ease; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <div class="eyebrow">Lookbook · three directions · five names</div>
+    <h1>How should the wedding app look, and what should it be called?</h1>
+    <p>Annette, this is for you to choose. Each direction below is a full visual system rendered as the app's home screen: budget, the four events, who paid what, and the countdown to August 2027 in Nairobi. Tap a name to see it as the app's wordmark in every direction, then record your picks at the bottom. Simi picks too, and the app gets built in whatever you agree on.</p>
+    <p class="muted">All money figures on the screens are examples, not your real spending.</p>
+  </header>
+
+  <section id="names">
+    <div class="sec-head">
+      <div class="eyebrow">Names</div>
+      <h2>Tap one to try it on</h2>
+    </div>
+    <div class="names" role="group" aria-label="Name options">
+      <button class="name-btn" type="button" data-name="Pamoja" aria-pressed="true"><strong>Pamoja</strong><span>Swahili for "together". Nairobi, in one word.</span></button>
+      <button class="name-btn" type="button" data-name="Troth" aria-pressed="false"><strong>Troth</strong><span>The old word for a pledge, as in "plight thy troth".</span></button>
+      <button class="name-btn" type="button" data-name="Tandem" aria-pressed="false"><strong>Tandem</strong><span>Two riders, one bicycle. Outlives the wedding.</span></button>
+      <button class="name-btn" type="button" data-name="Plus One" aria-pressed="false"><strong>Plus One</strong><span>The guest-list term, and the two of you.</span></button>
+      <button class="name-btn" type="button" data-name="Aisle" aria-pressed="false"><strong>Aisle</strong><span>One syllable. The walk toward the date.</span></button>
+    </div>
+    <p class="hint">Pamoja is shown first because the wedding is in Nairobi, not because it is the favourite. Simi has no favourite on record.</p>
+  </section>
+
+  <section id="directions">
+    <div class="sec-head">
+      <div class="eyebrow">Directions</div>
+      <h2>Three visual systems</h2>
+      <p class="muted">Each one is a complete answer: colour, type, shape, and how a phone screen feels in the hand. They are deliberately far apart.</p>
+    </div>
+
+    <article class="dir dir-a" id="dir-a">
+      <div class="dir-copy">
+        <div>
+          <div class="eyebrow">Direction A</div>
+          <h3 style="font-size:24px">Stationery</h3>
+        </div>
+        <p class="lede">The invitation suite, made into software. Ivory paper, espresso ink, olive and bronze, a serif with real italics. Hairline rules instead of shadows. Calm, expensive, unhurried.</p>
+        <div class="swatches">
+          <div class="sw"><i style="background:#F1EDE5"></i><b>Ivory</b>page</div>
+          <div class="sw"><i style="background:#FAF7F1"></i><b>Parchment</b>cards</div>
+          <div class="sw"><i style="background:#2E1C19"></i><b>Espresso</b>ink</div>
+          <div class="sw"><i style="background:#797049"></i><b>Olive</b>accent</div>
+          <div class="sw"><i style="background:#8A6D3B"></i><b>Bronze</b>paid</div>
+          <div class="sw"><i style="background:#9C4A2F"></i><b>Terracotta</b>overdue</div>
+        </div>
+        <div class="specimen">
+          <div class="s-label">Cormorant Garamond for titles and names · Inter for everything else</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;font-style:italic;line-height:1.1">Annette &amp; Simukayi</div>
+          <div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-2)">Ruracio · Nairobi · deposit paid</div>
+        </div>
+        <ul class="traits">
+          <li>Light theme is the identity. A dark "evening" theme exists but is quieter, deep espresso rather than black.</li>
+          <li>Money is set in the serif at large sizes so the numbers feel written, not printed by a bank.</li>
+          <li>Risk: it is the most conventional of the three. It will never look wrong. It may never look like yours.</li>
+        </ul>
+        <div class="lineage">Lineage: Kindred's "editorial warmth" system, extended with a dark theme.</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen" data-mock="a"></div></div>
+        <div class="example">Home screen · light theme</div>
+      </div>
+    </article>
+
+    <article class="dir dir-b" id="dir-b">
+      <div class="dir-copy">
+        <div>
+          <div class="eyebrow">Direction B</div>
+          <h3 style="font-size:24px">Kanga</h3>
+        </div>
+        <p class="lede">Borrowed from the kanga cloth: a bold border band, indigo and marigold and red on unbleached cotton, and a proverb line, the <em>jina</em>, that every real kanga carries. Heavy type, hard edges, confident colour. The only direction that could not have been made for a wedding anywhere else.</p>
+        <div class="swatches">
+          <div class="sw"><i style="background:#F6F1E7"></i><b>Cotton</b>page</div>
+          <div class="sw"><i style="background:#191512"></i><b>Ink</b>text, borders</div>
+          <div class="sw"><i style="background:#1F2A6B"></i><b>Indigo</b>primary</div>
+          <div class="sw"><i style="background:#E8A317"></i><b>Marigold</b>accent</div>
+          <div class="sw"><i style="background:#B8312F"></i><b>Kanga red</b>Annette, alerts</div>
+          <div class="sw"><i style="background:#2F6B4F"></i><b>Green</b>paid in full</div>
+        </div>
+        <div class="specimen">
+          <div class="s-label">Syne for the wordmark and headings · DM Sans for body and numbers</div>
+          <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.03em;text-transform:uppercase;line-height:1.05">Harusi ya Annette na Simi</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#B8312F">Haba na haba hujaza kibaba</div>
+        </div>
+        <ul class="traits">
+          <li>The jina strip rotates through Swahili proverbs about saving and patience. "Little by little fills the measure" is the budget's motto.</li>
+          <li>Both themes: cotton by day, indigo by night with marigold as the light source.</li>
+          <li>Risk: it is loud. Loud is tiring by month nine of an eleven-month plan. The build would keep the bands to the edges and let the middle breathe.</li>
+        </ul>
+        <div class="lineage">Lineage: new. Card shapes and person hues from DoneX; Juli-a's warmth in the cotton ground.</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen" data-mock="b"></div></div>
+        <div class="example">Home screen · light theme</div>
+      </div>
+    </article>
+
+    <article class="dir dir-c" id="dir-c">
+      <div class="dir-copy">
+        <div>
+          <div class="eyebrow">Direction C</div>
+          <h3 style="font-size:24px">Ledger</h3>
+        </div>
+        <p class="lede">The honest one about what this app mostly is: a shared fifty-thousand-dollar ledger. Dark first, gold-to-coral warmth on deep ink, monospace figures that line up, soft rounded cards. The wedding shows up in the words, not the decoration.</p>
+        <div class="swatches">
+          <div class="sw"><i style="background:#0E1116"></i><b>Ink</b>page</div>
+          <div class="sw"><i style="background:#171B22"></i><b>Slate</b>cards</div>
+          <div class="sw"><i style="background:#EEF0F3"></i><b>Chalk</b>text</div>
+          <div class="sw"><i style="background:#E0A24A"></i><b>Gold</b>accent</div>
+          <div class="sw"><i style="background:#FF6B6B"></i><b>Coral</b>gradient end</div>
+          <div class="sw"><i style="background:#F6F3EE"></i><b>Paper</b>light theme</div>
+        </div>
+        <div class="specimen">
+          <div class="s-label">Manrope for text · IBM Plex Mono for every figure</div>
+          <div style="font-family:'Manrope',sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.03em;line-height:1.1">Remaining</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-0.02em">$43,580.00</div>
+        </div>
+        <ul class="traits">
+          <li>Dark is the identity. The light theme is warm paper, not white, so it does not feel like a spreadsheet.</li>
+          <li>Each of you gets a hue, pink and blue by default, used only for "who paid" and "who added this". Changeable in settings.</li>
+          <li>Risk: it reads as a finance app. On the wedding day it will feel like the least romantic thing you own. That may be exactly right for a budget.</li>
+        </ul>
+        <div class="lineage">Lineage: DoneX's "sunrise" tokens and dark theme; Juli-a's 20px card radius.</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen" data-mock="c"></div></div>
+        <div class="example">Home screen · dark theme</div>
+      </div>
+    </article>
+  </section>
+
+  <section id="picks">
+    <div class="sec-head">
+      <div class="eyebrow">Your picks</div>
+      <h2>Record a choice</h2>
+      <p class="muted">Each of you saves your own. You can change it any time; the newest save wins. Mixing is allowed: a note like "Kanga colours on Stationery type" is a real answer.</p>
+    </div>
+    <div class="picks">
+      <form class="pick-card" id="pick-form">
+        <h3>Who is choosing?</h3>
+        <div class="seg" role="group" aria-label="Who is choosing">
+          <button type="button" class="pick-btn" data-who="annette" aria-pressed="true">Annette</button>
+          <button type="button" class="pick-btn" data-who="simi" aria-pressed="false">Simi</button>
+        </div>
+        <div class="field">
+          <label>Direction</label>
+          <div class="seg" role="group" aria-label="Direction">
+            <button type="button" class="pick-btn" data-dir="A" aria-pressed="false">A · Stationery</button>
+            <button type="button" class="pick-btn" data-dir="B" aria-pressed="false">B · Kanga</button>
+            <button type="button" class="pick-btn" data-dir="C" aria-pressed="false">C · Ledger</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Name</label>
+          <div class="seg" role="group" aria-label="Name" id="pick-names">
+            <button type="button" class="pick-btn" data-pname="Pamoja" aria-pressed="false">Pamoja</button>
+            <button type="button" class="pick-btn" data-pname="Troth" aria-pressed="false">Troth</button>
+            <button type="button" class="pick-btn" data-pname="Tandem" aria-pressed="false">Tandem</button>
+            <button type="button" class="pick-btn" data-pname="Plus One" aria-pressed="false">Plus One</button>
+            <button type="button" class="pick-btn" data-pname="Aisle" aria-pressed="false">Aisle</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="pick-note">Anything to add? Mixes, dislikes, a name of your own.</label>
+          <textarea id="pick-note" name="note" placeholder="e.g. Kanga, but calmer. And I want a Swahili name."></textarea>
+        </div>
+        <button type="submit" class="save" id="save-btn">Save my picks</button>
+        <div class="status" id="status" aria-live="polite"></div>
+      </form>
+      <div class="tally" id="tally">
+        <div class="eyebrow">Saved so far</div>
+        <div><b>Annette</b><span id="t-annette" class="muted">nothing yet</span></div>
+        <div><b>Simi</b><span id="t-simi" class="muted">nothing yet</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var icons = {
+    home: '<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+    money: '<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>',
+    plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+    plan: '<svg viewBox="0 0 24 24"><path d="M8 3v3M16 3v3M3 9h18"/><rect x="3" y="5" width="18" height="16" rx="2"/></svg>',
+    chat: '<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.3A8 8 0 1 1 21 12z"/></svg>'
+  };
+  function mock(name, dir) {
+    var jina = dir === 'b' ? '<div class="kanga-band"></div><div class="kanga-jina">Haba na haba hujaza kibaba</div>' : '';
+    var band = dir === 'b' ? '<div class="kanga-band"></div>' : '';
+    return '' +
+      '<div class="m-status"><span>9:41</span><span>Aug 2027</span></div>' +
+      jina +
+      '<div class="scroll">' +
+        '<div class="m-head"><div class="m-mark">' + name + '</div><div class="m-sub">Nairobi · August 2027 · date to be set</div></div>' +
+        '<div class="m-card budget"><div class="m-label">Remaining of $50,000</div><div class="m-big">$43,580 <small>· 13% spent</small></div><div class="m-bar"><i></i></div>' +
+          '<div class="m-count" style="margin-top:10px"><b>11</b> months to go · next payment: photographer $1,200 on 1 Oct</div></div>' +
+        '<div class="m-card"><div class="m-label">By event</div><div class="m-env">' +
+          env('Ruracio', 3400, 8000) + env('Wedding', 2520, 32000) + env('Honeymoon', 0, 7000) + env('Joint party', 500, 3000) +
+        '</div></div>' +
+        '<div class="m-card"><div class="m-label">Recent</div>' +
+          row('Photographer deposit', '$1,200', 'Wedding · 12 Sep', 's', 'Simi') +
+          row('Ruracio venue hold', '$800', 'Ruracio · 9 Sep', 'a', 'Annette') +
+        '</div>' +
+      '</div>' +
+      band +
+      '<div class="m-tabs"><span class="on">' + icons.home + 'Home</span><span>' + icons.money + 'Money</span><span class="fab"><b>' + icons.plus + '</b></span><span>' + icons.plan + 'Plan</span><span>' + icons.chat + 'Ask</span></div>';
+  }
+  function env(label, spent, cap) {
+    var pct = Math.round(spent / cap * 100);
+    return '<div class="m-env-row"><span>' + label + '</span><span class="n">$' + spent.toLocaleString() + ' / $' + cap.toLocaleString() + '</span><div class="m-bar"><i style="width:' + pct + '%"></i></div></div>';
+  }
+  function row(t, n, s, who, whoName) {
+    return '<div class="m-row"><span class="t">' + t + '</span><span class="n">' + n + '</span><span class="s">' + s + ' · <span class="m-chip ' + who + '">' + whoName + '</span></span></div>';
+  }
+  var currentName = 'Pamoja';
+  function renderMocks() {
+    document.querySelectorAll('[data-mock]').forEach(function (el) { el.innerHTML = mock(currentName, el.getAttribute('data-mock')); });
+  }
+  renderMocks();
+  document.querySelectorAll('.name-btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      currentName = b.getAttribute('data-name');
+      document.querySelectorAll('.name-btn').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      renderMocks();
+    });
+  });
+
+  /* Picks */
+  var pick = { who: 'annette', dir: null, name: null };
+  function seg(sel, attr, key) {
+    document.querySelectorAll(sel).forEach(function (b) {
+      b.addEventListener('click', function () {
+        pick[key] = b.getAttribute(attr);
+        document.querySelectorAll(sel).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        if (key === 'who') loadMine();
+      });
+    });
+  }
+  seg('[data-who]', 'data-who', 'who');
+  seg('[data-dir]', 'data-dir', 'dir');
+  seg('[data-pname]', 'data-pname', 'name');
+
+  var status = document.getElementById('status');
+  var saveBtn = document.getElementById('save-btn');
+  var note = document.getElementById('pick-note');
+  var dbRef = null;
+  var latest = {};
+  var dirNames = { A: 'A · Stationery', B: 'B · Kanga', C: 'C · Ledger' };
+
+  function showTally() {
+    ['annette', 'simi'].forEach(function (w) {
+      var el = document.getElementById('t-' + w);
+      var d = latest[w];
+      if (!d) { el.textContent = 'nothing yet'; el.className = 'muted'; return; }
+      var parts = [];
+      if (d.direction) parts.push(dirNames[d.direction] || d.direction);
+      if (d.name) parts.push('"' + d.name + '"');
+      if (d.note) parts.push('note: ' + d.note);
+      el.textContent = parts.join(' · ') || 'saved, no choices';
+      el.className = '';
+    });
+  }
+  function loadMine() {
+    var d = latest[pick.who];
+    pick.dir = d && d.direction ? d.direction : null;
+    pick.name = d && d.name ? d.name : null;
+    note.value = d && d.note ? d.note : '';
+    document.querySelectorAll('[data-dir]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-dir') === pick.dir)); });
+    document.querySelectorAll('[data-pname]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-pname') === pick.name)); });
+  }
+
+  document.getElementById('pick-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!dbRef) { status.textContent = 'Saving is not available in this view. Screenshot your picks and send them to Simi.'; return; }
+    if (!pick.dir && !pick.name && !note.value.trim()) { status.textContent = 'Pick a direction or a name first.'; return; }
+    saveBtn.disabled = true; status.textContent = 'Saving…';
+    dbRef.doc('picks/' + pick.who).set({
+      who: pick.who, direction: pick.dir, name: pick.name, note: note.value.trim(), updatedAt: new Date().toISOString()
+    }).then(function () {
+      status.textContent = 'Saved. Simi can see this now.';
+    }).catch(function (err) {
+      status.textContent = 'Could not save (' + (err && err.code ? err.code : 'error') + '). Screenshot your picks instead.';
+    }).then(function () { saveBtn.disabled = false; });
+  });
+
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('db').then(function (db) {
+      if (!db) { status.textContent = 'Picks cannot be saved from here. Screenshot them and send to Simi.'; return; }
+      dbRef = db;
+      db.collection('picks').onSnapshot(function (snap) {
+        latest = {};
+        snap.docs.forEach(function (doc) { var d = doc.data(); if (d && d.who) latest[d.who] = d; });
+        showTally();
+        if (!pick.dir && !pick.name && !note.value) loadMine();
+      }, function () { /* keep the page usable without live updates */ });
+    });
+  } else {
+    status.textContent = 'Picks cannot be saved from here. Screenshot them and send to Simi.';
+  }
+})();
+</script>
