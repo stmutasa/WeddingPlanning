@@ -545,18 +545,19 @@ All services live in `lib/services/`, take the acting `userId`, write an `Activi
 
 ## 5. Design system — chosen from the lookbook
 
-The lookbook (`docs/lookbook/index.html`, published as an artifact) offers three directions: **A Stationery** (Kindred lineage), **B Kanga** (new; East African textile), **C Ledger** (DoneX lineage). Annette picks; Simi may add a note. **Phase C must not start until `CONTEXT.md` §2 records the pick.** Phases A and B proceed with the placeholder tokens below and ship no visual polish.
+The lookbook (`docs/lookbook/index.html`, published as an artifact) now offers two directions after Annette's first round: **A Stationery, in colour** (Kindred bones; each event owns a colour: Ruracio marigold `#D9A21B`, Wedding bougainvillea `#B4306A`, Honeymoon lagoon `#2E8A87`, Joint party jacaranda `#7259B8`; primary accent bougainvillea; a four-colour ribbon on the top edge; stacked budget bar by event) and **B Kanga** (East African textile; indigo, marigold, kanga red on cotton; a proverb strip). Ledger is retired. Annette picks; Simi may add a note. **Phase C must not start until `CONTEXT.md` §2 records the pick.** Phases A and B proceed with the placeholder tokens below and ship no visual polish.
 
 Whatever the pick, these rules hold:
 - Both themes. `theme` per user (system/light/dark). Tokens defined once in `@theme`, never inline hex in components.
 - Two **person hues** (`UserSettings.hue`) used only for attribution: "who paid", "who added", assignee chips. Never for anything else.
+- **Event colours** (`Event.color`) are the only other categorical colour. They mark event chips, per-event bars and the stacked budget bar, and nothing else. Colour that is not a person, an event, or a semantic state is decoration and is not allowed.
 - Semantic colours separate from the accent: `ok` (paid, on track), `warn` (at risk, due soon), `danger` (over, overdue). One meaning each, everywhere.
 - Money: integer cents formatted `$43,580` (no cents unless < $100 or in a detail view); `tabular-nums` on every figure; original currency shown as a small secondary line ("KES 104,000 @ 130.0").
 - Hit targets ≥ 44pt; one-thumb reach for the primary action on every screen; visible pressed and focus states; reduced-motion respected.
 - Bottom tab bar on mobile (< 768px): **Home · Money · ＋ · Plan · Ask**. Desktop: left rail. `More` menu (avatar top-right): Guests, Vendors, Brief, Settings, theme toggle.
 - **Placeholder tokens for Phases A–B** (neutral, replaced in C): bg `#F3F1EC`/`#17161A`, surface `#FFFFFF`/`#201F24`, ink `#201D1A`/`#EEEBE6`, ink-soft `#6A645C`/`#A29C93`, line 12% ink, accent `#3F5E4A`/`#9DC2A8`, ok `#2F7D4F`, warn `#B7791F`, danger `#B23A3A`; font system sans.
 
-Direction token sheets (colours, type, radius, shadow rules) are in the lookbook's CSS under `.dir-a`, `.dir-b`, `.dir-c`; Phase C lifts the chosen one into `@theme` and writes the full component spec into this section before building.
+Direction token sheets (colours, type, radius, shadow rules) are in the lookbook's CSS under `.dir-a` and `.dir-b`; Phase C lifts the chosen one into `@theme` and writes the full component spec into this section before building.
 
 ---
 

@@ -87,7 +87,7 @@
   .dir-copy { display: grid; gap: 16px; }
   .dir-copy .lede { font-size: 16px; }
   .swatches { display: flex; flex-wrap: wrap; gap: 8px; }
-  .sw { display: grid; gap: 4px; font-size: 11px; color: var(--ink-2); width: 72px; }
+  .sw { display: grid; gap: 4px; font-size: 11px; color: var(--ink-2); width: 84px; }
   .sw i { display: block; height: 40px; border-radius: 8px; border: 1px solid var(--line); }
   .sw b { font-weight: 600; color: var(--ink); font-size: 11px; }
   .specimen { display: grid; gap: 6px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
@@ -141,17 +141,24 @@
   .m-tabs .fab b { width: 40px; height: 40px; border-radius: 99px; background: var(--m-accent); display: grid; place-items: center; margin-top: -18px; box-shadow: var(--m-shadow); }
   .m-tabs .fab svg { stroke: var(--m-on-accent); }
 
-  /* Direction A — Stationery */
+  /* Direction A — Stationery, in colour */
   .dir-a .screen {
     --m-bg: #F1EDE5; --m-card: #FAF7F1; --m-ink: #2E1C19; --m-sub: #5C4F4B; --m-line: rgba(46,28,25,0.14);
-    --m-accent: #797049; --m-on-accent: #F1EDE5; --m-track: #E1D9CC; --m-tabbar: #FAF7F1; --m-shadow: none;
+    --m-accent: #B4306A; --m-on-accent: #FAF7F1; --m-track: #E6DED2; --m-tabbar: #FAF7F1; --m-shadow: none;
     --m-radius: 4px; --m-display: "Cormorant Garamond", Georgia, serif; --m-body: "Inter", system-ui, sans-serif; --m-num: "Inter", system-ui, sans-serif;
     --m-mark-size: 34px; --m-mark-weight: 500; --m-mark-ls: 0;
-    --m-hue-a: #8A4B5E; --m-hue-a-soft: rgba(138,75,94,0.14); --m-hue-s: #4E5F7A; --m-hue-s-soft: rgba(78,95,122,0.14);
+    --m-hue-a: #B4306A; --m-hue-a-soft: rgba(180,48,106,0.13); --m-hue-s: #2F4C8A; --m-hue-s-soft: rgba(47,76,138,0.13);
+    --ev-ruracio: #D9A21B; --ev-wedding: #B4306A; --ev-honeymoon: #2E8A87; --ev-party: #7259B8;
   }
-  .dir-a .m-mark { font-style: italic; }
+  .dir-a .m-mark { font-style: italic; color: var(--m-accent); }
   .dir-a .m-big { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-size: 40px; }
   .dir-a .m-label { font-family: "Inter", sans-serif; letter-spacing: 0.14em; }
+  .dir-a .ribbon { height: 6px; background: linear-gradient(90deg, #D9A21B 0 25%, #B4306A 25% 50%, #7259B8 50% 75%, #2E8A87 75% 100%); }
+  .dir-a .m-bar.stack { display: flex; gap: 2px; background: var(--m-track); }
+  .dir-a .m-bar.stack i { border-radius: 0; }
+  .dir-a .m-env-row span:first-child::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 99px; background: var(--ev); margin-right: 7px; vertical-align: 1px; }
+  .dir-a .m-env-row .m-bar i { background: var(--ev); }
+  .dir-a .m-row .ev-chip { display: inline-block; font-size: 10.5px; font-weight: 600; padding: 1px 7px; border-radius: 3px; color: var(--ev); background: color-mix(in srgb, var(--ev) 12%, transparent); }
 
   /* Direction B — Kanga */
   .dir-b .screen {
@@ -172,19 +179,6 @@
   .dir-b .m-env-row .m-bar i { background: #B8312F; }
   .kanga-band { height: 14px; background: repeating-linear-gradient(90deg, #B8312F 0 10px, #F6F1E7 10px 14px, #1F2A6B 14px 24px, #F6F1E7 24px 28px, #E8A317 28px 38px, #F6F1E7 38px 42px); }
   .kanga-jina { font-family: "Syne", sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #B8312F; text-align: center; padding: 6px 0 0; }
-
-  /* Direction C — Ledger */
-  .dir-c .screen {
-    --m-bg: #0E1116; --m-card: #171B22; --m-ink: #EEF0F3; --m-sub: #98A0AC; --m-line: rgba(255,255,255,0.08);
-    --m-accent: #E0A24A; --m-on-accent: #1C1106; --m-track: #242A33; --m-tabbar: #12161D; --m-shadow: 0 6px 24px rgba(0,0,0,0.35);
-    --m-radius: 20px; --m-display: "Manrope", system-ui, sans-serif; --m-body: "Manrope", system-ui, sans-serif; --m-num: "IBM Plex Mono", ui-monospace, monospace;
-    --m-mark-size: 26px; --m-mark-weight: 800; --m-mark-ls: -0.03em;
-    --m-hue-a: #F783AC; --m-hue-a-soft: rgba(247,131,172,0.16); --m-hue-s: #6EA8FF; --m-hue-s-soft: rgba(110,168,255,0.16);
-  }
-  .dir-c .m-card { border: 1px solid var(--m-line); }
-  .dir-c .m-card.budget { background: linear-gradient(135deg, rgba(255,180,84,0.18), rgba(255,107,107,0.14)), #171B22; }
-  .dir-c .m-bar i { background: linear-gradient(90deg, #FFB454, #FF6B6B); }
-  .dir-c .m-big { font-weight: 600; }
 
   /* Picks */
   .picks { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
@@ -221,9 +215,9 @@
 
 <div class="wrap">
   <header class="intro">
-    <div class="eyebrow">Lookbook · three directions · five names</div>
+    <div class="eyebrow">Lookbook · round two · two directions · ten names</div>
     <h1>How should the wedding app look, and what should it be called?</h1>
-    <p>Annette, this is for you to choose. Each direction below is a full visual system rendered as the app's home screen: budget, the four events, who paid what, and the countdown to August 2027 in Nairobi. Tap a name to see it as the app's wordmark in every direction, then record your picks at the bottom. Simi picks too, and the app gets built in whatever you agree on.</p>
+    <p>Annette, round two. You narrowed it to Stationery and Kanga and asked for more colour in Stationery, so Stationery has been rebuilt with colour as part of the system: every event owns a colour, and the budget, chips and bars carry it. Kanga is unchanged. Ledger is retired. The names are all new; the first five are gone. Tap a name to see it as the wordmark, then save your picks at the bottom.</p>
     <p class="muted">All money figures on the screens are examples, not your real spending.</p>
   </header>
 
@@ -233,48 +227,54 @@
       <h2>Tap one to try it on</h2>
     </div>
     <div class="names" role="group" aria-label="Name options">
-      <button class="name-btn" type="button" data-name="Pamoja" aria-pressed="true"><strong>Pamoja</strong><span>Swahili for "together". Nairobi, in one word.</span></button>
-      <button class="name-btn" type="button" data-name="Troth" aria-pressed="false"><strong>Troth</strong><span>The old word for a pledge, as in "plight thy troth".</span></button>
-      <button class="name-btn" type="button" data-name="Tandem" aria-pressed="false"><strong>Tandem</strong><span>Two riders, one bicycle. Outlives the wedding.</span></button>
-      <button class="name-btn" type="button" data-name="Plus One" aria-pressed="false"><strong>Plus One</strong><span>The guest-list term, and the two of you.</span></button>
-      <button class="name-btn" type="button" data-name="Aisle" aria-pressed="false"><strong>Aisle</strong><span>One syllable. The walk toward the date.</span></button>
+      <button class="name-btn" type="button" data-name="Rudo" aria-pressed="true"><strong>Rudo</strong><span>Shona for "love". A word from Simi's side for a Nairobi wedding.</span></button>
+      <button class="name-btn" type="button" data-name="Wendo" aria-pressed="false"><strong>Wendo</strong><span>Love, in Kikuyu and Meru. You know the spelling better than this page does.</span></button>
+      <button class="name-btn" type="button" data-name="Wawili" aria-pressed="false"><strong>Wawili</strong><span>Swahili: "the two of us".</span></button>
+      <button class="name-btn" type="button" data-name="Sherehe" aria-pressed="false"><strong>Sherehe</strong><span>Swahili: celebration. Sounds like one.</span></button>
+      <button class="name-btn" type="button" data-name="Ndoa" aria-pressed="false"><strong>Ndoa</strong><span>Swahili: marriage. Two syllables, no explaining.</span></button>
+      <button class="name-btn" type="button" data-name="Jacaranda" aria-pressed="false"><strong>Jacaranda</strong><span>Nairobi's purple streets. Colour, and a place.</span></button>
+      <button class="name-btn" type="button" data-name="Marigold" aria-pressed="false"><strong>Marigold</strong><span>The wedding flower of half the world, and a colour in the palette.</span></button>
+      <button class="name-btn" type="button" data-name="Confetti" aria-pressed="false"><strong>Confetti</strong><span>Colour, celebration, and what the money turns into.</span></button>
+      <button class="name-btn" type="button" data-name="Twine" aria-pressed="false"><strong>Twine</strong><span>Two strands wound into one string. Also what holds the favours together.</span></button>
+      <button class="name-btn" type="button" data-name="Harusi" aria-pressed="false"><strong>Harusi</strong><span>Swahili: wedding. Says exactly what it is.</span></button>
     </div>
-    <p class="hint">Pamoja is shown first because the wedding is in Nairobi, not because it is the favourite. Simi has no favourite on record.</p>
+    <p class="hint">Rudo is shown first only because something has to be. Pamoja, Troth, Tandem, Plus One and Aisle are retired. If none of these land, write your own in the note below; a name you like beats any of ours.</p>
   </section>
 
   <section id="directions">
     <div class="sec-head">
       <div class="eyebrow">Directions</div>
-      <h2>Three visual systems</h2>
-      <p class="muted">Each one is a complete answer: colour, type, shape, and how a phone screen feels in the hand. They are deliberately far apart.</p>
+      <h2>Two visual systems</h2>
+      <p class="muted">Each one is a complete answer: colour, type, shape, and how a phone screen feels in the hand. Both now carry real colour; they differ in how loud it is and what it means.</p>
     </div>
 
     <article class="dir dir-a" id="dir-a">
       <div class="dir-copy">
         <div>
-          <div class="eyebrow">Direction A</div>
-          <h3 style="font-size:24px">Stationery</h3>
+          <div class="eyebrow">Direction A · revised</div>
+          <h3 style="font-size:24px">Stationery, in colour</h3>
         </div>
-        <p class="lede">The invitation suite, made into software. Ivory paper, espresso ink, olive and bronze, a serif with real italics. Hairline rules instead of shadows. Calm, expensive, unhurried.</p>
+        <p class="lede">Same bones as before: ivory paper, espresso ink, a serif with real italics, hairline rules, no shadows. Now with a colour system taken from a Nairobi garden: bougainvillea, marigold, jacaranda, lagoon. Each event owns one colour and keeps it everywhere, so the colour tells you something every time you see it.</p>
         <div class="swatches">
           <div class="sw"><i style="background:#F1EDE5"></i><b>Ivory</b>page</div>
-          <div class="sw"><i style="background:#FAF7F1"></i><b>Parchment</b>cards</div>
           <div class="sw"><i style="background:#2E1C19"></i><b>Espresso</b>ink</div>
-          <div class="sw"><i style="background:#797049"></i><b>Olive</b>accent</div>
-          <div class="sw"><i style="background:#8A6D3B"></i><b>Bronze</b>paid</div>
-          <div class="sw"><i style="background:#9C4A2F"></i><b>Terracotta</b>overdue</div>
+          <div class="sw"><i style="background:#B4306A"></i><b>Bougainvillea</b>primary · Wedding</div>
+          <div class="sw"><i style="background:#D9A21B"></i><b>Marigold</b>Ruracio</div>
+          <div class="sw"><i style="background:#7259B8"></i><b>Jacaranda</b>Joint party</div>
+          <div class="sw"><i style="background:#2E8A87"></i><b>Lagoon</b>Honeymoon</div>
         </div>
         <div class="specimen">
           <div class="s-label">Cormorant Garamond for titles and names · Inter for everything else</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;font-style:italic;line-height:1.1">Annette &amp; Simukayi</div>
-          <div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-2)">Ruracio · Nairobi · deposit paid</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;font-style:italic;line-height:1.1;color:#B4306A">Annette &amp; Simukayi</div>
+          <div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-2)"><span style="color:#D9A21B">● Ruracio</span> · <span style="color:#B4306A">● Wedding</span> · <span style="color:#2E8A87">● Honeymoon</span> · <span style="color:#7259B8">● Party</span></div>
         </div>
         <ul class="traits">
-          <li>Light theme is the identity. A dark "evening" theme exists but is quieter, deep espresso rather than black.</li>
-          <li>Money is set in the serif at large sizes so the numbers feel written, not printed by a bank.</li>
-          <li>Risk: it is the most conventional of the three. It will never look wrong. It may never look like yours.</li>
+          <li>Colour has a job: the budget bar is stacked by event, chips and rows take their event's colour, the wordmark and primary button are bougainvillea. Paper and ink stay quiet so the colour reads.</li>
+          <li>A ribbon of the four colours runs along the top edge of every screen, like a coloured card edge on good stationery.</li>
+          <li>Dark theme: deep espresso paper, the same four colours lifted a step brighter.</li>
+          <li>Risk: four saturated colours on one screen need discipline. If the build lets colour leak into anything that is not an event, it turns into a dashboard. The rule above is the guard.</li>
         </ul>
-        <div class="lineage">Lineage: Kindred's "editorial warmth" system, extended with a dark theme.</div>
+        <div class="lineage">Lineage: Kindred's editorial system, with colour from Nairobi rather than olive.</div>
       </div>
       <div class="phone-wrap">
         <div class="phone"><div class="screen" data-mock="a"></div></div>
@@ -315,38 +315,6 @@
       </div>
     </article>
 
-    <article class="dir dir-c" id="dir-c">
-      <div class="dir-copy">
-        <div>
-          <div class="eyebrow">Direction C</div>
-          <h3 style="font-size:24px">Ledger</h3>
-        </div>
-        <p class="lede">The honest one about what this app mostly is: a shared fifty-thousand-dollar ledger. Dark first, gold-to-coral warmth on deep ink, monospace figures that line up, soft rounded cards. The wedding shows up in the words, not the decoration.</p>
-        <div class="swatches">
-          <div class="sw"><i style="background:#0E1116"></i><b>Ink</b>page</div>
-          <div class="sw"><i style="background:#171B22"></i><b>Slate</b>cards</div>
-          <div class="sw"><i style="background:#EEF0F3"></i><b>Chalk</b>text</div>
-          <div class="sw"><i style="background:#E0A24A"></i><b>Gold</b>accent</div>
-          <div class="sw"><i style="background:#FF6B6B"></i><b>Coral</b>gradient end</div>
-          <div class="sw"><i style="background:#F6F3EE"></i><b>Paper</b>light theme</div>
-        </div>
-        <div class="specimen">
-          <div class="s-label">Manrope for text · IBM Plex Mono for every figure</div>
-          <div style="font-family:'Manrope',sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.03em;line-height:1.1">Remaining</div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-0.02em">$43,580.00</div>
-        </div>
-        <ul class="traits">
-          <li>Dark is the identity. The light theme is warm paper, not white, so it does not feel like a spreadsheet.</li>
-          <li>Each of you gets a hue, pink and blue by default, used only for "who paid" and "who added this". Changeable in settings.</li>
-          <li>Risk: it reads as a finance app. On the wedding day it will feel like the least romantic thing you own. That may be exactly right for a budget.</li>
-        </ul>
-        <div class="lineage">Lineage: DoneX's "sunrise" tokens and dark theme; Juli-a's 20px card radius.</div>
-      </div>
-      <div class="phone-wrap">
-        <div class="phone"><div class="screen" data-mock="c"></div></div>
-        <div class="example">Home screen · dark theme</div>
-      </div>
-    </article>
   </section>
 
   <section id="picks">
@@ -365,24 +333,28 @@
         <div class="field">
           <label>Direction</label>
           <div class="seg" role="group" aria-label="Direction">
-            <button type="button" class="pick-btn" data-dir="A" aria-pressed="false">A · Stationery</button>
+            <button type="button" class="pick-btn" data-dir="A" aria-pressed="false">A · Stationery, in colour</button>
             <button type="button" class="pick-btn" data-dir="B" aria-pressed="false">B · Kanga</button>
-            <button type="button" class="pick-btn" data-dir="C" aria-pressed="false">C · Ledger</button>
           </div>
         </div>
         <div class="field">
           <label>Name</label>
           <div class="seg" role="group" aria-label="Name" id="pick-names">
-            <button type="button" class="pick-btn" data-pname="Pamoja" aria-pressed="false">Pamoja</button>
-            <button type="button" class="pick-btn" data-pname="Troth" aria-pressed="false">Troth</button>
-            <button type="button" class="pick-btn" data-pname="Tandem" aria-pressed="false">Tandem</button>
-            <button type="button" class="pick-btn" data-pname="Plus One" aria-pressed="false">Plus One</button>
-            <button type="button" class="pick-btn" data-pname="Aisle" aria-pressed="false">Aisle</button>
+            <button type="button" class="pick-btn" data-pname="Rudo" aria-pressed="false">Rudo</button>
+            <button type="button" class="pick-btn" data-pname="Wendo" aria-pressed="false">Wendo</button>
+            <button type="button" class="pick-btn" data-pname="Wawili" aria-pressed="false">Wawili</button>
+            <button type="button" class="pick-btn" data-pname="Sherehe" aria-pressed="false">Sherehe</button>
+            <button type="button" class="pick-btn" data-pname="Ndoa" aria-pressed="false">Ndoa</button>
+            <button type="button" class="pick-btn" data-pname="Jacaranda" aria-pressed="false">Jacaranda</button>
+            <button type="button" class="pick-btn" data-pname="Marigold" aria-pressed="false">Marigold</button>
+            <button type="button" class="pick-btn" data-pname="Confetti" aria-pressed="false">Confetti</button>
+            <button type="button" class="pick-btn" data-pname="Twine" aria-pressed="false">Twine</button>
+            <button type="button" class="pick-btn" data-pname="Harusi" aria-pressed="false">Harusi</button>
           </div>
         </div>
         <div class="field">
           <label for="pick-note">Anything to add? Mixes, dislikes, a name of your own.</label>
-          <textarea id="pick-note" name="note" placeholder="e.g. Kanga, but calmer. And I want a Swahili name."></textarea>
+          <textarea id="pick-note" name="note" placeholder="e.g. Stationery colours but a bit softer. Or: none of these names, I like ___."></textarea>
         </div>
         <button type="submit" class="save" id="save-btn">Save my picks</button>
         <div class="status" id="status" aria-live="polite"></div>
@@ -406,34 +378,38 @@
     chat: '<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.3A8 8 0 1 1 21 12z"/></svg>'
   };
   function mock(name, dir) {
-    var jina = dir === 'b' ? '<div class="kanga-band"></div><div class="kanga-jina">Haba na haba hujaza kibaba</div>' : '';
+    var jina = dir === 'b' ? '<div class="kanga-band"></div><div class="kanga-jina">Haba na haba hujaza kibaba</div>' : (dir === 'a' ? '<div class="ribbon"></div>' : '');
     var band = dir === 'b' ? '<div class="kanga-band"></div>' : '';
+    var bar = dir === 'a'
+      ? '<div class="m-bar stack"><i style="width:6.8%;background:var(--ev-ruracio)"></i><i style="width:5%;background:var(--ev-wedding)"></i><i style="width:1%;background:var(--ev-party)"></i></div>'
+      : '<div class="m-bar"><i></i></div>';
     return '' +
       '<div class="m-status"><span>9:41</span><span>Aug 2027</span></div>' +
       jina +
       '<div class="scroll">' +
         '<div class="m-head"><div class="m-mark">' + name + '</div><div class="m-sub">Nairobi · August 2027 · date to be set</div></div>' +
-        '<div class="m-card budget"><div class="m-label">Remaining of $50,000</div><div class="m-big">$43,580 <small>· 13% spent</small></div><div class="m-bar"><i></i></div>' +
+        '<div class="m-card budget"><div class="m-label">Remaining of $50,000</div><div class="m-big">$43,580 <small>· 13% spent</small></div>' + bar + '' +
           '<div class="m-count" style="margin-top:10px"><b>11</b> months to go · next payment: photographer $1,200 on 1 Oct</div></div>' +
         '<div class="m-card"><div class="m-label">By event</div><div class="m-env">' +
-          env('Ruracio', 3400, 8000) + env('Wedding', 2520, 32000) + env('Honeymoon', 0, 7000) + env('Joint party', 500, 3000) +
+          env('Ruracio', 3400, 8000, 'ruracio') + env('Wedding', 2520, 32000, 'wedding') + env('Honeymoon', 0, 7000, 'honeymoon') + env('Joint party', 500, 3000, 'party') +
         '</div></div>' +
         '<div class="m-card"><div class="m-label">Recent</div>' +
-          row('Photographer deposit', '$1,200', 'Wedding · 12 Sep', 's', 'Simi') +
-          row('Ruracio venue hold', '$800', 'Ruracio · 9 Sep', 'a', 'Annette') +
+          row('Photographer deposit', '$1,200', 'Wedding', '12 Sep', 's', 'Simi', 'wedding', dir) +
+          row('Ruracio venue hold', '$800', 'Ruracio', '9 Sep', 'a', 'Annette', 'ruracio', dir) +
         '</div>' +
       '</div>' +
       band +
       '<div class="m-tabs"><span class="on">' + icons.home + 'Home</span><span>' + icons.money + 'Money</span><span class="fab"><b>' + icons.plus + '</b></span><span>' + icons.plan + 'Plan</span><span>' + icons.chat + 'Ask</span></div>';
   }
-  function env(label, spent, cap) {
+  function env(label, spent, cap, ev) {
     var pct = Math.round(spent / cap * 100);
-    return '<div class="m-env-row"><span>' + label + '</span><span class="n">$' + spent.toLocaleString() + ' / $' + cap.toLocaleString() + '</span><div class="m-bar"><i style="width:' + pct + '%"></i></div></div>';
+    return '<div class="m-env-row" style="--ev:var(--ev-' + ev + ')"><span>' + label + '</span><span class="n">$' + spent.toLocaleString() + ' / $' + cap.toLocaleString() + '</span><div class="m-bar"><i style="width:' + pct + '%"></i></div></div>';
   }
-  function row(t, n, s, who, whoName) {
-    return '<div class="m-row"><span class="t">' + t + '</span><span class="n">' + n + '</span><span class="s">' + s + ' · <span class="m-chip ' + who + '">' + whoName + '</span></span></div>';
+  function row(t, n, evLabel, d, who, whoName, ev, dir) {
+    var evHtml = dir === 'a' ? '<span class="ev-chip" style="--ev:var(--ev-' + ev + ')">' + evLabel + '</span>' : evLabel;
+    return '<div class="m-row"><span class="t">' + t + '</span><span class="n">' + n + '</span><span class="s">' + evHtml + ' · ' + d + ' · <span class="m-chip ' + who + '">' + whoName + '</span></span></div>';
   }
-  var currentName = 'Pamoja';
+  var currentName = 'Rudo';
   function renderMocks() {
     document.querySelectorAll('[data-mock]').forEach(function (el) { el.innerHTML = mock(currentName, el.getAttribute('data-mock')); });
   }
@@ -466,7 +442,7 @@
   var note = document.getElementById('pick-note');
   var dbRef = null;
   var latest = {};
-  var dirNames = { A: 'A · Stationery', B: 'B · Kanga', C: 'C · Ledger' };
+  var dirNames = { A: 'A · Stationery, in colour', B: 'B · Kanga', C: 'C · Ledger (retired)' };
 
   function showTally() {
     ['annette', 'simi'].forEach(function (w) {

@@ -27,12 +27,12 @@ Lineage: Simi's earlier apps. **Kindred** (Next.js + Prisma/SQLite + Auth.js Goo
 | 2026-09-14 | AI: OpenAI primary ("ChatGPT Astra 6", high reasoning; exact API id **still needed from Simi**), live model dropdown for OpenAI + Anthropic, backup model (default `claude-opus-5`). | Simi |
 | 2026-09-14 | No private items in v1; `visibility` column reserved. | Simi |
 | 2026-09-14 | Plaid for bank import, with CSV import alongside. | Simi (Plaid) + Fable (CSV) |
-| 2026-09-14 | Design direction and name: **pending Annette's lookbook pick.** | — |
+| 2026-09-14 | Design direction and name: **pending Annette's lookbook pick.** Round one: she rejected all five names and narrowed to Stationery vs Kanga, asking for more colour in Stationery. Round two lookbook: Stationery rebuilt with event colours; Ledger retired; ten new names. | Annette |
 | 2026-09-14 | The Brief: nightly regenerated markdown for external AI sessions, with token URL and optional Drive sync. | Simi |
 | 2026-09-14 | Railway + SQLite on a volume. | default accepted |
 | 2026-09-14 | Lanes: Fable plans and QAs, Opus 5 writes logic and screens, Sonnet 5 writes plumbing. | Simi |
 
-**Name options on the lookbook:** Pamoja, Troth, Tandem, Plus One, Aisle. Placeholder until chosen: `APP_NAME=Pamoja`.
+**Name options on the lookbook (round two):** Rudo, Wendo, Wawili, Sherehe, Ndoa, Jacaranda, Marigold, Confetti, Twine, Harusi. Retired: Pamoja, Troth, Tandem, Plus One, Aisle. Placeholder until chosen: `APP_NAME=Pamoja` (placeholder only; not a candidate).
 
 ## 3. Open items
 
