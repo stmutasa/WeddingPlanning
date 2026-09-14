@@ -32,6 +32,18 @@ export function MoneyScreen({ defaultFunderId }: { defaultFunderId: string | nul
   const eventSlug = params.get("event") ?? undefined;
   const [expenseId, setExpenseId] = useState<string | null>(params.get("expense"));
 
+  const openExpense = useCallback(
+    (id: string | null) => {
+      setExpenseId(id);
+      const search = new URLSearchParams(params.toString());
+      if (id) search.set("expense", id);
+      else search.delete("expense");
+      const qs = search.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    },
+    [params, pathname, router],
+  );
+
   const setTab = useCallback(
     (next: string) => {
       const search = new URLSearchParams(params.toString());
@@ -47,7 +59,7 @@ export function MoneyScreen({ defaultFunderId }: { defaultFunderId: string | nul
       <Tabs items={TABS} value={tab} onChange={setTab} />
 
       {tab === "expenses" ? (
-        <ExpensesTab eventSlug={eventSlug} openExpenseId={expenseId} onOpenExpense={setExpenseId} />
+        <ExpensesTab eventSlug={eventSlug} openExpenseId={expenseId} onOpenExpense={openExpense} />
       ) : null}
       {tab === "budget" ? <BudgetTab /> : null}
       {tab === "vendors" ? <VendorsTab /> : null}

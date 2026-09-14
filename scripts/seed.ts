@@ -18,7 +18,7 @@ const EVENTS = [
   { slug: "ruracio", name: "Ruracio", budgetCents: 800_000, sortOrder: 0, locked: false },
   { slug: "wedding", name: "Wedding", budgetCents: 3_200_000, sortOrder: 1, locked: false },
   { slug: "honeymoon", name: "Honeymoon", budgetCents: 700_000, sortOrder: 2, locked: false },
-  { slug: "party", name: "Joint bachelor / bachelorette", budgetCents: 300_000, sortOrder: 3, locked: false },
+  { slug: "party", name: "Joint party", budgetCents: 300_000, sortOrder: 3, locked: false, notes: "Combined bachelor / bachelorette party" },
   { slug: "general", name: "General", budgetCents: 0, sortOrder: 4, locked: true },
 ];
 
@@ -378,6 +378,22 @@ async function seedDemo(users: Record<string, { id: string; funderId: string }>)
         data: { kind: "DECISION", title: d.title, body: d.body, pinned: true, createdById: simi.id },
       });
     }
+    console.log("Seeding demo weekly digest...");
+    const digest = {
+      headline: "Ruracio deposit paid; two payments due within a fortnight",
+      body: [
+        "Spent this week: $1,170 across 3 expenses.",
+        "Due in 14 days: Two Rivers Catering Co. $1,500 on 24 Sep; Lumen Photography $1,200 on 1 Oct.",
+        "8 bank rows are waiting in the inbox.",
+        "All five events are on track against their envelopes.",
+      ],
+      push: "Harusi: $1,170 spent this week, 2 payments due, 8 inbox rows.",
+      generatedAt: new Date().toISOString(),
+      fromModel: false,
+    };
+    await db.note.create({
+      data: { kind: "DIGEST", title: digest.headline, body: JSON.stringify(digest), createdById: simi.id },
+    });
   }
 
   const existingTx = await db.transaction.count();

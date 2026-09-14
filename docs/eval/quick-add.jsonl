@@ -1,0 +1,20 @@
+{"text":"paid florist 800 deposit ruracio","expect":{"amount":800,"originalCurrency":"USD","eventSlug":"ruracio","isDeposit":true}}
+{"text":"annette sent 15k kes to the ruracio venue yesterday","expect":{"amount":15000,"originalCurrency":"KES","eventSlug":"ruracio","funderName":"Annette","dateOffsetDays":-1}}
+{"text":"2,400 photographer balance from joint","expect":{"amount":2400,"originalCurrency":"USD","funderName":"Joint","eventSlug":"wedding"}}
+{"text":"honeymoon flights 1,850 on my card","expect":{"amount":1850,"originalCurrency":"USD","eventSlug":"honeymoon","funderName":"__viewer__"}}
+{"text":"Ksh 4,500 for save the date printing","expect":{"amount":4500,"originalCurrency":"KES","eventSlug":"wedding"}}
+{"text":"dj deposit for the party 300","expect":{"amount":300,"originalCurrency":"USD","eventSlug":"party","isDeposit":true}}
+{"text":"simi paid 120 dollars for party favours last friday","expect":{"amount":120,"originalCurrency":"USD","eventSlug":"party","funderName":"Simi"}}
+{"text":"caterer tasting 85","expect":{"amount":85,"originalCurrency":"USD"}}
+{"text":"wedding cake 60,000 shillings, Annette","expect":{"amount":60000,"originalCurrency":"KES","eventSlug":"wedding","funderName":"Annette"}}
+{"text":"paid 1.2k to the videographer as balance","expect":{"amount":1200,"originalCurrency":"USD","isDeposit":false}}
+{"text":"ruracio gifts for the elders 25k kes joint","expect":{"amount":25000,"originalCurrency":"KES","eventSlug":"ruracio","funderName":"Joint"}}
+{"text":"honeymoon hotel deposit 900 joint account","expect":{"amount":900,"originalCurrency":"USD","eventSlug":"honeymoon","funderName":"Joint","isDeposit":true}}
+{"text":"marriage licence fee 50","expect":{"amount":50,"originalCurrency":"USD"}}
+{"text":"bridesmaid dresses 640 annette paid on the 3rd","expect":{"amount":640,"originalCurrency":"USD","eventSlug":"wedding","funderName":"Annette"}}
+{"text":"transport for the ruracio delegation 18,000 ksh","expect":{"amount":18000,"originalCurrency":"KES","eventSlug":"ruracio"}}
+{"text":"I paid 210 for the party venue hold","expect":{"amount":210,"originalCurrency":"USD","eventSlug":"party","funderName":"__viewer__"}}
+{"text":"second instalment to the venue 5,000","expect":{"amount":5000,"originalCurrency":"USD"}}
+{"text":"makeup trial 7,500 kes","expect":{"amount":7500,"originalCurrency":"KES"}}
+{"text":"honeymoon travel insurance 140 two weeks ago","expect":{"amount":140,"originalCurrency":"USD","eventSlug":"honeymoon","dateOffsetDays":-14}}
+{"text":"remind me to pay the caterer","expect":{"amount":null}}

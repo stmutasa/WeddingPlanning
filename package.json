@@ -12,7 +12,9 @@
     "icons": "tsx scripts/generate-icons.ts",
     "vapid": "tsx scripts/generate-vapid.ts",
     "smoke": "tsx scripts/smoke.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "eval": "tsx scripts/eval.ts",
+    "eval:receipts": "tsx scripts/eval-receipts.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.125.0",

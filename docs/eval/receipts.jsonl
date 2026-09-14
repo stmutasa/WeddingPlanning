@@ -1,0 +1,4 @@
+{"file":"mpesa-confirmation.png","expect":{"kind":"RECEIPT","currency":"KES","total":24000,"merchantContains":"Karen Blixen"}}
+{"file":"kes-invoice-instalments.png","expect":{"kind":"INVOICE","currency":"KES","total":180000,"scheduleCount":3}}
+{"file":"us-card-receipt.png","expect":{"kind":"RECEIPT","currency":"USD","total":312.4}}
+{"file":"handwritten-note.png","expect":{"kind":"OTHER","currency":"KES","total":6500}}

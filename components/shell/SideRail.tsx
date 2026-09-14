@@ -28,7 +28,7 @@ export function SideRail({
           light, card in dark, so night mode stays indigo with marigold as
           the light source rather than a wall of marigold. */}
       <aside
-        className="flex w-full flex-col gap-1 p-4"
+        className="flex w-full flex-col gap-1 py-4 pl-4 pr-8"
         style={{ background: "var(--tabbar-bg)", color: "var(--tabbar-fg)" }}
       >
         <Link href="/" className="wordmark mb-6 block px-2 text-2xl" style={{ color: "var(--tabbar-fg)" }}>
