@@ -8,6 +8,6 @@
 - Never send `temperature`/`top_p`/`top_k` or a `thinking` parameter to Anthropic models; always check `stop_reason === "refusal"`. Never send `temperature` to OpenAI reasoning models.
 - Read `node_modules/next/dist/docs/` before writing routes; `params` and `searchParams` are Promises.
 - Both themes, always. Tokens only in `app/globals.css` `@theme`; no inline hex in components.
-- Nothing in the repo (code, comments, commits, docs) names the AI model that wrote it.
+- Nothing in the code, comments or docs names the AI model that wrote it. The required commit trailer is the one exception.
 - The app name comes from `APP_NAME`; never hardcode it.
 - Phase C (screens) does not start until `CONTEXT.md` §2 records Annette's lookbook pick.

@@ -49,7 +49,7 @@ Lineage: Simi's earlier apps. **Kindred** (Next.js + Prisma/SQLite + Auth.js Goo
 - Plaid: US/CA/EU institutions only. Transactions arrive with 1–3 days lag; pending rows update in place.
 - FX: `open.er-api.com` is free and unauthenticated; cache daily; allow manual override.
 - Next.js drifts: read `node_modules/next/dist/docs/` before writing routes.
-- Nothing in the repo may name the AI model used to write it.
+- Nothing in code, comments or docs may name the AI model used to write it (commit trailers excepted).
 
 ## 5. Where the lookbook lives
 
