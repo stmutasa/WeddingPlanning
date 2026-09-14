@@ -59,6 +59,37 @@ async function people() {
   return { annette, simi };
 }
 
+export interface NetInput {
+  annetteFrontedCents: number;
+  simiFrontedCents: number;
+  annetteUserId: string | null;
+  simiUserId: string | null;
+  settlements: { fromUserId: string; toUserId: string; amountCents: number }[];
+}
+
+/**
+ * Applies settlements already paid across to the fronted totals, so a pair
+ * who have squared up read as square. Paying moves the payer's effective
+ * contribution up and the receiver's down by the same amount, which leaves
+ * the total fronted unchanged. Pure, so it is unit-tested directly.
+ */
+export function applySettlements(input: NetInput): {
+  annetteNetCents: number;
+  simiNetCents: number;
+} {
+  let annetteNetCents = input.annetteFrontedCents;
+  let simiNetCents = input.simiFrontedCents;
+
+  for (const s of input.settlements) {
+    if (input.annetteUserId && s.fromUserId === input.annetteUserId) annetteNetCents += s.amountCents;
+    if (input.simiUserId && s.fromUserId === input.simiUserId) simiNetCents += s.amountCents;
+    if (input.annetteUserId && s.toUserId === input.annetteUserId) annetteNetCents -= s.amountCents;
+    if (input.simiUserId && s.toUserId === input.simiUserId) simiNetCents -= s.amountCents;
+  }
+
+  return { annetteNetCents, simiNetCents };
+}
+
 export async function summary(): Promise<SettleSummary> {
   const [wedding, { annette, simi }, byFunder, funders, settlements] = await Promise.all([
     db.wedding.findUnique({ where: { id: "main" } }),
@@ -82,16 +113,13 @@ export async function summary(): Promise<SettleSummary> {
     else if (kind === "FAMILY" || kind === "OTHER") familyCents += cents;
   }
 
-  // A settlement already paid moves the payer's effective contribution up
-  // and the receiver's down, so a settled pair nets to zero.
-  let annetteNet = annetteFrontedCents;
-  let simiNet = simiFrontedCents;
-  for (const s of settlements) {
-    if (annette?.userId && s.fromUserId === annette.userId) annetteNet += s.amountCents;
-    if (simi?.userId && s.fromUserId === simi.userId) simiNet += s.amountCents;
-    if (annette?.userId && s.toUserId === annette.userId) annetteNet -= s.amountCents;
-    if (simi?.userId && s.toUserId === simi.userId) simiNet -= s.amountCents;
-  }
+  const { annetteNetCents: annetteNet, simiNetCents: simiNet } = applySettlements({
+    annetteFrontedCents,
+    simiFrontedCents,
+    annetteUserId: annette?.userId ?? null,
+    simiUserId: simi?.userId ?? null,
+    settlements,
+  });
 
   const ratio = {
     numerator: wedding?.splitNumerator ?? 1,

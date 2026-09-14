@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { FUNDER_KINDS } from "@/lib/types";
+import { funders } from "@/lib/services/catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -17,11 +16,7 @@ export async function GET(request: Request) {
   if (isSessionError(session)) return session;
 
   const includeArchived = new URL(request.url).searchParams.get("includeArchived") === "true";
-  const funders = await db.funder.findMany({
-    where: includeArchived ? undefined : { archived: false },
-    orderBy: { name: "asc" },
-  });
-  return NextResponse.json(funders);
+  return NextResponse.json(await funders.list(includeArchived));
 }
 
 export async function POST(request: Request) {
@@ -30,22 +25,6 @@ export async function POST(request: Request) {
 
   return withApiErrors(async () => {
     const body = createSchema.parse(await request.json());
-    if (body.kind === "USER") {
-      return NextResponse.json(
-        { error: "USER funders are created automatically on sign-in" },
-        { status: 400 }
-      );
-    }
-    const funder = await db.funder.create({ data: body });
-
-    await recordActivity({
-      userId: session.id,
-      action: "CREATED",
-      entityType: "Funder",
-      entityId: funder.id,
-      summary: `${session.name ?? "Someone"} added the funder ${funder.name}`,
-    });
-
-    return NextResponse.json(funder, { status: 201 });
+    return NextResponse.json(await funders.create(session.id, body), { status: 201 });
   });
 }

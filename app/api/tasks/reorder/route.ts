@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
+import * as tasks from "@/lib/services/tasks";
 
 export const dynamic = "force-dynamic";
 
@@ -16,19 +15,7 @@ export async function POST(request: Request) {
 
   return withApiErrors(async () => {
     const { ids } = reorderSchema.parse(await request.json());
-
-    await db.$transaction(
-      ids.map((id, index) => db.task.update({ where: { id }, data: { sortOrder: index } }))
-    );
-
-    await recordActivity({
-      userId: session.id,
-      action: "UPDATED",
-      entityType: "Task",
-      entityId: null,
-      summary: `${session.name ?? "Someone"} reordered tasks`,
-    });
-
+    await tasks.reorder(ids);
     return NextResponse.json({ ok: true });
   });
 }

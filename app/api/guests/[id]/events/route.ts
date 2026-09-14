@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { RSVP_STATUSES } from "@/lib/types";
+import * as guests from "@/lib/services/guests";
 
 export const dynamic = "force-dynamic";
 
@@ -20,22 +19,7 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/guests/[id
   return withApiErrors(async () => {
     const { id } = await ctx.params;
     const { eventId, rsvp } = patchSchema.parse(await request.json());
-
-    const guestEvent = await db.guestEvent.upsert({
-      where: { guestId_eventId: { guestId: id, eventId } },
-      update: { rsvp },
-      create: { guestId: id, eventId, rsvp },
-      include: { event: true, guest: true },
-    });
-
-    await recordActivity({
-      userId: session.id,
-      action: "UPDATED",
-      entityType: "Guest",
-      entityId: id,
-      summary: `${session.name ?? "Someone"} set ${guestEvent.guest.firstName}'s RSVP for ${guestEvent.event.name} to ${rsvp}`,
-    });
-
+    const guestEvent = await guests.setRsvp(session.id, id, eventId, rsvp);
     return NextResponse.json(guestEvent);
   });
 }

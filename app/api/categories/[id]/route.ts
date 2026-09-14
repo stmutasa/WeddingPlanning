@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
-import { requireSession, isSessionError, withApiErrors, apiError } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
+import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
+import { categories } from "@/lib/services/catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -19,17 +18,7 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/categories
   return withApiErrors(async () => {
     const { id } = await ctx.params;
     const body = patchSchema.parse(await request.json());
-    const category = await db.category.update({ where: { id }, data: body });
-
-    await recordActivity({
-      userId: session.id,
-      action: "UPDATED",
-      entityType: "Category",
-      entityId: category.id,
-      summary: `${session.name ?? "Someone"} updated the category ${category.name}`,
-    });
-
-    return NextResponse.json(category);
+    return NextResponse.json(await categories.update(session.id, id, body));
   });
 }
 
@@ -39,19 +28,7 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/categori
 
   return withApiErrors(async () => {
     const { id } = await ctx.params;
-    const category = await db.category.findUnique({ where: { id } });
-    if (!category) return apiError("Category not found", 404);
-
-    await db.category.delete({ where: { id } });
-
-    await recordActivity({
-      userId: session.id,
-      action: "DELETED",
-      entityType: "Category",
-      entityId: id,
-      summary: `${session.name ?? "Someone"} deleted the category ${category.name}`,
-    });
-
+    await categories.remove(session.id, id);
     return NextResponse.json({ ok: true });
   });
 }

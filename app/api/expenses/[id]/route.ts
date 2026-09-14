@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors, apiError } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { zCents, zDate, zOptionalId } from "@/lib/validation";
+import * as expenses from "@/lib/services/expenses";
 
 export const dynamic = "force-dynamic";
 
@@ -26,10 +25,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/expenses/[i
   if (isSessionError(session)) return session;
 
   const { id } = await ctx.params;
-  const expense = await db.expense.findUnique({
-    where: { id },
-    include: { event: true, category: true, vendor: true, funder: true, attachments: true },
-  });
+  const expense = await expenses.get(id);
   if (!expense) return apiError("Expense not found", 404);
   return NextResponse.json(expense);
 }
@@ -41,16 +37,7 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/expenses/[
   return withApiErrors(async () => {
     const { id } = await ctx.params;
     const body = patchSchema.parse(await request.json());
-    const expense = await db.expense.update({ where: { id }, data: body });
-
-    await recordActivity({
-      userId: session.id,
-      action: "UPDATED",
-      entityType: "Expense",
-      entityId: expense.id,
-      summary: `${session.name ?? "Someone"} updated ${expense.description}`,
-    });
-
+    const expense = await expenses.update(session.id, id, body);
     return NextResponse.json(expense);
   });
 }
@@ -61,19 +48,7 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/expenses
 
   return withApiErrors(async () => {
     const { id } = await ctx.params;
-    const expense = await db.expense.findUnique({ where: { id } });
-    if (!expense) return apiError("Expense not found", 404);
-
-    await db.expense.delete({ where: { id } });
-
-    await recordActivity({
-      userId: session.id,
-      action: "DELETED",
-      entityType: "Expense",
-      entityId: id,
-      summary: `${session.name ?? "Someone"} deleted ${expense.description}`,
-    });
-
+    await expenses.remove(session.id, id);
     return NextResponse.json({ ok: true });
   });
 }

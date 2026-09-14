@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors, apiError } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { zCents, zOptionalId } from "@/lib/validation";
 import { VENDOR_STATUSES } from "@/lib/types";
+import * as vendors from "@/lib/services/vendors";
 
 export const dynamic = "force-dynamic";
 
@@ -33,10 +32,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/vendors/[id
   if (isSessionError(session)) return session;
 
   const { id } = await ctx.params;
-  const vendor = await db.vendor.findUnique({
-    where: { id },
-    include: { category: true, event: true, payments: true, attachments: true },
-  });
+  const vendor = await vendors.get(id);
   if (!vendor) return apiError("Vendor not found", 404);
   return NextResponse.json(vendor);
 }
@@ -48,16 +44,7 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/vendors/[i
   return withApiErrors(async () => {
     const { id } = await ctx.params;
     const body = patchSchema.parse(await request.json());
-    const vendor = await db.vendor.update({ where: { id }, data: body });
-
-    await recordActivity({
-      userId: session.id,
-      action: "UPDATED",
-      entityType: "Vendor",
-      entityId: vendor.id,
-      summary: `${session.name ?? "Someone"} updated ${vendor.name}`,
-    });
-
+    const vendor = await vendors.update(session.id, id, body);
     return NextResponse.json(vendor);
   });
 }
@@ -68,19 +55,7 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/vendors/
 
   return withApiErrors(async () => {
     const { id } = await ctx.params;
-    const vendor = await db.vendor.findUnique({ where: { id } });
-    if (!vendor) return apiError("Vendor not found", 404);
-
-    await db.vendor.delete({ where: { id } });
-
-    await recordActivity({
-      userId: session.id,
-      action: "DELETED",
-      entityType: "Vendor",
-      entityId: id,
-      summary: `${session.name ?? "Someone"} deleted ${vendor.name}`,
-    });
-
+    await vendors.remove(session.id, id);
     return NextResponse.json({ ok: true });
   });
 }

@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { zCents, zOptionalId } from "@/lib/validation";
 import { VENDOR_STATUSES } from "@/lib/types";
+import * as vendors from "@/lib/services/vendors";
 
 export const dynamic = "force-dynamic";
 
@@ -32,18 +31,17 @@ export async function GET(request: Request) {
   if (isSessionError(session)) return session;
 
   const { searchParams } = new URL(request.url);
-  const status = searchParams.get("status");
-  const eventId = searchParams.get("eventId");
+  const withMoney = searchParams.get("withMoney") === "1";
 
-  const vendors = await db.vendor.findMany({
-    where: {
-      ...(status ? { status } : {}),
-      ...(eventId ? { eventId } : {}),
-    },
-    include: { category: true, event: true, payments: true },
-    orderBy: { name: "asc" },
+  // ?withMoney=1 adds paidCents and nextDue to every row; without it the
+  // shape is the Phase A one, plus `payments`.
+  if (withMoney) return NextResponse.json(await vendors.withMoney());
+
+  const rows = await vendors.list({
+    status: searchParams.get("status") ?? undefined,
+    eventId: searchParams.get("eventId") ?? undefined,
   });
-  return NextResponse.json(vendors);
+  return NextResponse.json(rows);
 }
 
 export async function POST(request: Request) {
@@ -52,16 +50,7 @@ export async function POST(request: Request) {
 
   return withApiErrors(async () => {
     const body = createSchema.parse(await request.json());
-    const vendor = await db.vendor.create({ data: body });
-
-    await recordActivity({
-      userId: session.id,
-      action: "CREATED",
-      entityType: "Vendor",
-      entityId: vendor.id,
-      summary: `${session.name ?? "Someone"} added the vendor ${vendor.name}`,
-    });
-
+    const vendor = await vendors.create(session.id, body);
     return NextResponse.json(vendor, { status: 201 });
   });
 }

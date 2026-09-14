@@ -1,5 +1,8 @@
 import type { Prisma, Task } from "@prisma/client";
 import { db } from "@/lib/db";
+import { ai } from "@/lib/ai/client";
+import * as aiContext from "@/lib/ai/context";
+import * as prompts from "@/lib/ai/prompts";
 import type { TaskPriority, TaskStatus } from "@/lib/types";
 import { log } from "./actor";
 import { NotFound } from "./errors";
@@ -216,4 +219,54 @@ function parseDay(day: string): Date | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return null;
   const d = new Date(`${day}T12:00:00.000Z`);
   return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/**
+ * DESIGN.md §4 `tasks.generateTimeline()` — asks the model for the Kenyan
+ * wedding sequence (PROMPTS.md §6) and applies it idempotently. Returns the
+ * draft too, so the UI can show a review step before anything is written
+ * when it passes `apply: false`.
+ */
+export async function generateTimeline(
+  userId: string,
+  options: { apply?: boolean } = {}
+): Promise<{
+  drafted: GeneratedTask[];
+  created: Task[];
+  skipped: number;
+  provider: string;
+  model: string;
+  fellBack: boolean;
+}> {
+  const [base, ctx] = await Promise.all([aiContext.base(userId), aiContext.timeline()]);
+  const prompt = prompts.timeline(base, ctx);
+
+  const completion = await ai.json<prompts.TimelineDraft>({
+    feature: "TIMELINE",
+    system: prompt.system,
+    user: prompt.user,
+    schema: prompts.jsonSchema(prompts.timelineSchema),
+    schemaName: "timeline",
+    effort: "medium",
+    maxTokens: 4000,
+  });
+
+  const parsed = prompts.timelineSchema.parse(completion.data);
+  const today = new Date().toISOString().slice(0, 10);
+  // PROMPTS.md §6: "Dates before today are not allowed."
+  const drafted = parsed.tasks.filter((t) => t.dueDate >= today);
+
+  const applied =
+    options.apply === false
+      ? { created: [] as Task[], skipped: 0 }
+      : await applyTimeline(userId, drafted);
+
+  return {
+    drafted,
+    created: applied.created,
+    skipped: applied.skipped,
+    provider: completion.provider,
+    model: completion.model,
+    fellBack: completion.fellBack,
+  };
 }

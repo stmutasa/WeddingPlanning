@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { GUEST_SIDES } from "@/lib/types";
+import * as guests from "@/lib/services/guests";
 
 export const dynamic = "force-dynamic";
 
@@ -26,20 +25,7 @@ export async function GET(request: Request) {
   if (isSessionError(session)) return session;
 
   const q = new URL(request.url).searchParams.get("q");
-  const guests = await db.guest.findMany({
-    where: q
-      ? {
-          OR: [
-            { firstName: { contains: q } },
-            { lastName: { contains: q } },
-            { household: { contains: q } },
-          ],
-        }
-      : undefined,
-    include: { events: { include: { event: true } } },
-    orderBy: [{ household: "asc" }, { firstName: "asc" }],
-  });
-  return NextResponse.json(guests);
+  return NextResponse.json(await guests.list({ q: q ?? undefined }));
 }
 
 export async function POST(request: Request) {
@@ -48,16 +34,7 @@ export async function POST(request: Request) {
 
   return withApiErrors(async () => {
     const body = createSchema.parse(await request.json());
-    const guest = await db.guest.create({ data: body });
-
-    await recordActivity({
-      userId: session.id,
-      action: "CREATED",
-      entityType: "Guest",
-      entityId: guest.id,
-      summary: `${session.name ?? "Someone"} added guest ${guest.firstName}`,
-    });
-
+    const guest = await guests.create(session.id, body);
     return NextResponse.json(guest, { status: 201 });
   });
 }

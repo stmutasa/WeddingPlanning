@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors, apiError } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { GUEST_SIDES } from "@/lib/types";
+import * as guests from "@/lib/services/guests";
 
 export const dynamic = "force-dynamic";
 
@@ -26,10 +25,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/guests/[id]
   if (isSessionError(session)) return session;
 
   const { id } = await ctx.params;
-  const guest = await db.guest.findUnique({
-    where: { id },
-    include: { events: { include: { event: true } } },
-  });
+  const guest = await guests.get(id);
   if (!guest) return apiError("Guest not found", 404);
   return NextResponse.json(guest);
 }
@@ -41,16 +37,7 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/guests/[id
   return withApiErrors(async () => {
     const { id } = await ctx.params;
     const body = patchSchema.parse(await request.json());
-    const guest = await db.guest.update({ where: { id }, data: body });
-
-    await recordActivity({
-      userId: session.id,
-      action: "UPDATED",
-      entityType: "Guest",
-      entityId: guest.id,
-      summary: `${session.name ?? "Someone"} updated guest ${guest.firstName}`,
-    });
-
+    const guest = await guests.update(session.id, id, body);
     return NextResponse.json(guest);
   });
 }
@@ -61,19 +48,7 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/guests/[
 
   return withApiErrors(async () => {
     const { id } = await ctx.params;
-    const guest = await db.guest.findUnique({ where: { id } });
-    if (!guest) return apiError("Guest not found", 404);
-
-    await db.guest.delete({ where: { id } });
-
-    await recordActivity({
-      userId: session.id,
-      action: "DELETED",
-      entityType: "Guest",
-      entityId: id,
-      summary: `${session.name ?? "Someone"} removed guest ${guest.firstName}`,
-    });
-
+    await guests.remove(session.id, id);
     return NextResponse.json({ ok: true });
   });
 }

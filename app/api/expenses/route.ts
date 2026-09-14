@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
-import { requireSession, isSessionError, withApiErrors, apiError } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
+import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
 import { zCents, zDate, zOptionalId } from "@/lib/validation";
-import { fxToCents, sum } from "@/lib/money/cents";
 import { EXPENSE_SOURCES } from "@/lib/types";
+import * as expenses from "@/lib/services/expenses";
 
 export const dynamic = "force-dynamic";
 
@@ -25,8 +23,8 @@ const createSchema = z
     notes: z.string().nullable().optional(),
     paymentDueId: zOptionalId,
   })
-  .refine((v) => v.amountCents != null || (v.originalAmount != null && v.fxRate != null), {
-    message: "Provide amountCents, or originalAmount together with fxRate",
+  .refine((v) => v.amountCents != null || (v.originalAmount != null && v.originalCurrency != null), {
+    message: "Provide amountCents, or originalAmount together with originalCurrency",
   });
 
 export async function GET(request: Request) {
@@ -34,43 +32,24 @@ export async function GET(request: Request) {
   if (isSessionError(session)) return session;
 
   const { searchParams } = new URL(request.url);
-  const eventId = searchParams.get("eventId");
-  const categoryId = searchParams.get("categoryId");
-  const vendorId = searchParams.get("vendorId");
-  const funderId = searchParams.get("funderId");
-  const source = searchParams.get("source");
-  const q = searchParams.get("q");
-  const from = searchParams.get("from");
-  const to = searchParams.get("to");
-
-  const where = {
-    ...(eventId ? { eventId } : {}),
-    ...(categoryId ? { categoryId } : {}),
-    ...(vendorId ? { vendorId } : {}),
-    ...(funderId ? { funderId } : {}),
-    ...(source ? { source } : {}),
-    ...(q ? { description: { contains: q } } : {}),
-    ...(from || to
-      ? {
-          date: {
-            ...(from ? { gte: new Date(from) } : {}),
-            ...(to ? { lte: new Date(to) } : {}),
-          },
-        }
-      : {}),
+  const value = (key: string) => searchParams.get(key) ?? undefined;
+  const when = (key: string) => {
+    const raw = searchParams.get(key);
+    return raw ? new Date(raw) : undefined;
   };
 
-  const expenses = await db.expense.findMany({
-    where,
-    include: { event: true, category: true, vendor: true, funder: true },
-    orderBy: { date: "desc" },
+  const result = await expenses.list({
+    eventId: value("eventId"),
+    categoryId: value("categoryId"),
+    vendorId: value("vendorId"),
+    funderId: value("funderId"),
+    source: value("source"),
+    q: value("q"),
+    from: when("from"),
+    to: when("to"),
   });
 
-  return NextResponse.json({
-    expenses,
-    totalCents: sum(expenses.map((e) => e.amountCents)),
-    count: expenses.length,
-  });
+  return NextResponse.json(result);
 }
 
 export async function POST(request: Request) {
@@ -79,53 +58,9 @@ export async function POST(request: Request) {
 
   return withApiErrors(async () => {
     const body = createSchema.parse(await request.json());
-
-    const amountCents =
-      body.amountCents ?? fxToCents(body.originalAmount as number, body.fxRate as number);
-
-    if (body.paymentDueId) {
-      const paymentDue = await db.paymentDue.findUnique({ where: { id: body.paymentDueId } });
-      if (!paymentDue) return apiError("Payment not found", 404);
-      if (paymentDue.status !== "OPEN") return apiError("Payment is not open", 400);
-    }
-
-    const expense = await db.$transaction(async (tx) => {
-      const created = await tx.expense.create({
-        data: {
-          description: body.description,
-          amountCents,
-          originalAmount: body.originalAmount ?? null,
-          originalCurrency: body.originalCurrency ?? null,
-          fxRate: body.fxRate ?? null,
-          date: body.date,
-          eventId: body.eventId,
-          categoryId: body.categoryId ?? null,
-          vendorId: body.vendorId ?? null,
-          funderId: body.funderId,
-          source: body.source ?? "MANUAL",
-          notes: body.notes ?? null,
-          createdById: session.id,
-        },
-      });
-
-      if (body.paymentDueId) {
-        await tx.paymentDue.update({
-          where: { id: body.paymentDueId },
-          data: { status: "PAID", expenseId: created.id },
-        });
-      }
-
-      return created;
-    });
-
-    await recordActivity({
-      userId: session.id,
-      action: "CREATED",
-      entityType: "Expense",
-      entityId: expense.id,
-      summary: `${session.name ?? "Someone"} added ${expense.description}, $${(amountCents / 100).toFixed(2)}`,
-    });
-
+    // The service resolves FX when originalCurrency is not USD and no rate
+    // was given, links a PaymentDue, and appends the Activity row.
+    const expense = await expenses.create(session.id, body);
     return NextResponse.json(expense, { status: 201 });
   });
 }

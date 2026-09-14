@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
+import * as chat from "@/lib/services/chat";
 
 export const dynamic = "force-dynamic";
 
@@ -13,9 +12,7 @@ const createSchema = z.object({
 export async function GET() {
   const session = await requireSession();
   if (isSessionError(session)) return session;
-
-  const threads = await db.chatThread.findMany({ orderBy: { updatedAt: "desc" } });
-  return NextResponse.json(threads);
+  return NextResponse.json(await chat.threads());
 }
 
 export async function POST(request: Request) {
@@ -24,18 +21,7 @@ export async function POST(request: Request) {
 
   return withApiErrors(async () => {
     const body = createSchema.parse(await request.json().catch(() => ({})));
-    const thread = await db.chatThread.create({
-      data: { title: body.title ?? null, createdById: session.id },
-    });
-
-    await recordActivity({
-      userId: session.id,
-      action: "CREATED",
-      entityType: "ChatThread",
-      entityId: thread.id,
-      summary: `${session.name ?? "Someone"} started a new Ask thread`,
-    });
-
+    const thread = await chat.createThread(session.id, body.title ?? null);
     return NextResponse.json(thread, { status: 201 });
   });
 }

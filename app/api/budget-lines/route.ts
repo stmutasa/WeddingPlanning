@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { zCents, zId } from "@/lib/validation";
 import { BUDGET_LINE_SOURCES } from "@/lib/types";
+import { budgetLines } from "@/lib/services/catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -21,11 +20,7 @@ export async function GET(request: Request) {
   if (isSessionError(session)) return session;
 
   const eventId = new URL(request.url).searchParams.get("eventId");
-  const lines = await db.budgetLine.findMany({
-    where: eventId ? { eventId } : undefined,
-    include: { category: true, event: true },
-  });
-  return NextResponse.json(lines);
+  return NextResponse.json(await budgetLines.list(eventId ?? undefined));
 }
 
 export async function POST(request: Request) {
@@ -34,16 +29,6 @@ export async function POST(request: Request) {
 
   return withApiErrors(async () => {
     const body = createSchema.parse(await request.json());
-    const line = await db.budgetLine.create({ data: body });
-
-    await recordActivity({
-      userId: session.id,
-      action: "CREATED",
-      entityType: "BudgetLine",
-      entityId: line.id,
-      summary: `${session.name ?? "Someone"} added a budget line`,
-    });
-
-    return NextResponse.json(line, { status: 201 });
+    return NextResponse.json(await budgetLines.create(session.id, body), { status: 201 });
   });
 }

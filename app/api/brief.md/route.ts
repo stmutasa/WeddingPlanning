@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
+import * as brief from "@/lib/services/brief";
 
 export const dynamic = "force-dynamic";
 
@@ -21,10 +22,9 @@ export async function GET(request: Request) {
     }
   }
 
-  const latest = await db.briefSnapshot.findFirst({ orderBy: { generatedAt: "desc" } });
-  if (!latest) {
-    return NextResponse.json({ error: "No brief has been generated yet" }, { status: 404 });
-  }
+  // A link that has never been generated still answers with the truth:
+  // generate on demand rather than 404 at whoever followed the link.
+  const latest = (await brief.latest()) ?? (await brief.generate("MANUAL"));
 
   return new NextResponse(latest.markdown, {
     headers: {

@@ -54,7 +54,11 @@ export async function log(input: LogInput): Promise<void> {
   });
 }
 
-/** `$800` / `$1,240.50` for activity lines. */
+/**
+ * `$800` for a round amount, `$115.38` when there are cents — activity
+ * lines read like DESIGN.md §3's example without ever rounding a real
+ * figure away.
+ */
 export function money(cents: number): string {
-  return formatUSD(cents);
+  return formatUSD(cents, { detail: cents % 100 !== 0 });
 }

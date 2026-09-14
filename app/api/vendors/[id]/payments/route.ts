@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { zCents, zDate } from "@/lib/validation";
+import * as payments from "@/lib/services/payments";
 
 export const dynamic = "force-dynamic";
 
@@ -13,20 +12,20 @@ const createSchema = z.object({
   amountCents: zCents,
 });
 
+// PUT replaces the vendor's whole OPEN set at once (DESIGN.md §4
+// `payments.schedule`); POST still appends one instalment.
+const scheduleSchema = z.object({
+  items: z.array(createSchema),
+});
+
 export async function GET(_request: Request, ctx: RouteContext<"/api/vendors/[id]/payments">) {
   const session = await requireSession();
   if (isSessionError(session)) return session;
 
   const { id } = await ctx.params;
-  const payments = await db.paymentDue.findMany({
-    where: { vendorId: id },
-    orderBy: { dueDate: "asc" },
-  });
-  return NextResponse.json(payments);
+  return NextResponse.json(await payments.forVendor(id));
 }
 
-// Phase A: appends a single OPEN payment. `payments.schedule()` (Phase B)
-// replaces the whole OPEN set atomically per DESIGN.md §4.
 export async function POST(request: Request, ctx: RouteContext<"/api/vendors/[id]/payments">) {
   const session = await requireSession();
   if (isSessionError(session)) return session;
@@ -34,16 +33,19 @@ export async function POST(request: Request, ctx: RouteContext<"/api/vendors/[id
   return withApiErrors(async () => {
     const { id } = await ctx.params;
     const body = createSchema.parse(await request.json());
-    const payment = await db.paymentDue.create({ data: { ...body, vendorId: id } });
-
-    await recordActivity({
-      userId: session.id,
-      action: "CREATED",
-      entityType: "PaymentDue",
-      entityId: payment.id,
-      summary: `${session.name ?? "Someone"} scheduled a payment: ${payment.label}`,
-    });
-
+    const payment = await payments.addOne(session.id, id, body);
     return NextResponse.json(payment, { status: 201 });
+  });
+}
+
+export async function PUT(request: Request, ctx: RouteContext<"/api/vendors/[id]/payments">) {
+  const session = await requireSession();
+  if (isSessionError(session)) return session;
+
+  return withApiErrors(async () => {
+    const { id } = await ctx.params;
+    const body = scheduleSchema.parse(await request.json());
+    const rows = await payments.schedule(session.id, id, body.items);
+    return NextResponse.json(rows);
   });
 }

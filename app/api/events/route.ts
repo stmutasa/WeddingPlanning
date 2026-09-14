@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { zCents, zDate } from "@/lib/validation";
+import { events } from "@/lib/services/catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -20,9 +19,7 @@ const createSchema = z.object({
 export async function GET() {
   const session = await requireSession();
   if (isSessionError(session)) return session;
-
-  const events = await db.event.findMany({ orderBy: { sortOrder: "asc" } });
-  return NextResponse.json(events);
+  return NextResponse.json(await events.list());
 }
 
 export async function POST(request: Request) {
@@ -31,16 +28,6 @@ export async function POST(request: Request) {
 
   return withApiErrors(async () => {
     const body = createSchema.parse(await request.json());
-    const event = await db.event.create({ data: body });
-
-    await recordActivity({
-      userId: session.id,
-      action: "CREATED",
-      entityType: "Event",
-      entityId: event.id,
-      summary: `${session.name ?? "Someone"} added the event ${event.name}`,
-    });
-
-    return NextResponse.json(event, { status: 201 });
+    return NextResponse.json(await events.create(session.id, body), { status: 201 });
   });
 }

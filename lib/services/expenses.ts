@@ -130,7 +130,8 @@ export async function create(userId: string, input: ExpenseInput): Promise<Expen
     action: "CREATED",
     entityType: "Expense",
     entityId: expense.id,
-    summary: `added ${event.name} ${expense.description}, ${money(amountCents)}`,
+    // DESIGN.md §3's example, exactly: "Annette added Ruracio venue hold, $800".
+    summary: `added ${expense.description}, ${money(amountCents)}`,
   });
 
   return expense;

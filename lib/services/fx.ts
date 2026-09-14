@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { fxToCents } from "@/lib/money/cents";
 import { FxUnavailable } from "./errors";
 
 /**
@@ -47,10 +48,27 @@ export function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+/**
+ * Turns the API's direction (1 USD = N quote) into the one stored on
+ * `Expense.fxRate` (1 quote = N USD). Pure, so the conversion can be tested
+ * without a database or the network.
+ */
+export function toExpenseRate(usdToQuoteRate: number): number {
+  return 1 / usdToQuoteRate;
+}
+
+/**
+ * An original-currency amount to USD cents, given the API-direction rate.
+ * Rounds half-to-even like every other conversion in the app, so a long run
+ * of KES receipts does not drift upward.
+ */
+export function convertToCents(originalAmount: number, usdToQuoteRate: number): number {
+  return fxToCents(originalAmount, toExpenseRate(usdToQuoteRate));
+}
+
 /** "1 unit of `quote` = N USD" — the direction stored on `Expense.fxRate`. */
 export async function rate(day: string, quote: string): Promise<number> {
-  const usdTo = await usdToQuote(day, quote);
-  return 1 / usdTo;
+  return toExpenseRate(await usdToQuote(day, quote));
 }
 
 /** "1 USD = N units of `quote`" — the direction the API and the UI quote in. */

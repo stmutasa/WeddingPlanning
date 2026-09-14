@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireSession, isSessionError, withApiErrors, apiError } from "@/lib/http";
-import { recordActivity } from "@/lib/activity";
 import { zDate, zOptionalId } from "@/lib/validation";
 import { TASK_PRIORITIES, TASK_STATUSES } from "@/lib/types";
+import * as tasks from "@/lib/services/tasks";
 
 export const dynamic = "force-dynamic";
 
@@ -36,25 +36,7 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/tasks/[id]
   return withApiErrors(async () => {
     const { id } = await ctx.params;
     const body = patchSchema.parse(await request.json());
-    const task = await db.task.update({
-      where: { id },
-      data: {
-        ...body,
-        completedAt: body.status === "DONE" ? new Date() : body.status === "OPEN" ? null : undefined,
-      },
-    });
-
-    await recordActivity({
-      userId: session.id,
-      action: "UPDATED",
-      entityType: "Task",
-      entityId: task.id,
-      summary:
-        body.status === "DONE"
-          ? `${session.name ?? "Someone"} completed ${task.title}`
-          : `${session.name ?? "Someone"} updated ${task.title}`,
-    });
-
+    const task = await tasks.update(session.id, id, body);
     return NextResponse.json(task);
   });
 }
@@ -65,19 +47,7 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/tasks/[i
 
   return withApiErrors(async () => {
     const { id } = await ctx.params;
-    const task = await db.task.findUnique({ where: { id } });
-    if (!task) return apiError("Task not found", 404);
-
-    await db.task.delete({ where: { id } });
-
-    await recordActivity({
-      userId: session.id,
-      action: "DELETED",
-      entityType: "Task",
-      entityId: id,
-      summary: `${session.name ?? "Someone"} deleted the task ${task.title}`,
-    });
-
+    await tasks.remove(session.id, id);
     return NextResponse.json({ ok: true });
   });
 }
