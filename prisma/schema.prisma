@@ -1,0 +1,474 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Auth.js ----------
+model User {
+  id            String             @id @default(cuid())
+  name          String?
+  email         String             @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  settings      UserSettings?
+  pushSubs      PushSubscription[]
+  funder        Funder?
+  plaidItems    PlaidItem[]
+  activities    Activity[]
+  tasksAssigned Task[]             @relation("TaskAssignee")
+  createdAt     DateTime           @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ---------- Singletons ----------
+model Wedding {
+  id               String    @id @default("main")
+  coupleNames      String    @default("Annette & Simi")
+  city             String    @default("Nairobi")
+  country          String    @default("Kenya")
+  eventTimezone    String    @default("Africa/Nairobi")
+  targetMonth      String    @default("2027-08") // YYYY-MM, used until a date is set
+  weddingDate      DateTime? // null until chosen
+  budgetCents      Int       @default(5000000) // $50,000
+  currency         String    @default("USD")
+  splitNumerator   Int       @default(1) // settle-up share for Annette; Simi = 1 - this
+  splitDenominator Int       @default(2)
+  updatedAt        DateTime  @updatedAt
+}
+
+model AppSettings {
+  id                    String   @id @default("main")
+  aiPrimaryProvider     String   @default("openai") // openai | anthropic
+  aiPrimaryModel        String   @default("") // "" => env AI_MODEL, else resolved by AI_MODEL_MATCH
+  aiPrimaryResolvedFrom String   @default("") // "" | "env" | "match" | "user"
+  aiBackupProvider      String   @default("anthropic")
+  aiBackupModel         String   @default("claude-opus-5")
+  aiReasoning           String   @default("high") // low | medium | high  (mapped per provider)
+  aiEnabled             Boolean  @default(true)
+  assistantTone         String   @default("warm, direct, brief")
+  briefToken            String? // random 32 hex; gates /api/brief.md?token=
+  briefDriveFileId      String? // Google Drive file id when Drive sync is on
+  briefDriveOwnerUserId String? // whose Drive credentials are used
+  digestDay             Int      @default(0) // 0 = Sunday
+  updatedAt             DateTime @updatedAt
+}
+
+model UserSettings {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName String? // "Annette" / "Simi"
+  hue         String   @default("pink") // pink | blue | orange | violet | green | teal | red | amber
+  timezone    String   @default("America/New_York")
+  digestHour  Int      @default(8)
+  pushEnabled Boolean  @default(false)
+  theme       String   @default("system") // system | light | dark
+  updatedAt   DateTime @updatedAt
+}
+
+// ---------- Money ----------
+model Event {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  date        DateTime?
+  budgetCents Int          @default(0)
+  color       String? // token name
+  sortOrder   Int          @default(0)
+  notes       String?
+  locked      Boolean      @default(false) // general=true: cannot be deleted
+  expenses    Expense[]
+  budgetLines BudgetLine[]
+  vendors     Vendor[]
+  tasks       Task[]
+  guestEvents GuestEvent[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  name        String       @unique // Venue, Catering, Attire, Photo & Video, Music & DJ, Decor & Flowers,
+  // Stationery, Beauty, Transport, Travel & Stay, Gifts & Favours, Fees & Legal, Ruracio gifts, Other
+  icon        String?
+  sortOrder   Int          @default(0)
+  expenses    Expense[]
+  budgetLines BudgetLine[]
+  vendors     Vendor[]
+}
+
+model BudgetLine {
+  id           String   @id @default(cuid())
+  eventId      String
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  categoryId   String
+  category     Category @relation(fields: [categoryId], references: [id])
+  plannedCents Int
+  note         String?
+  source       String   @default("USER") // USER | AI
+
+  @@unique([eventId, categoryId])
+}
+
+model Funder {
+  id            String         @id @default(cuid())
+  name          String
+  kind          String // USER | JOINT | FAMILY | OTHER
+  userId        String?        @unique
+  user          User?          @relation(fields: [userId], references: [id])
+  archived      Boolean        @default(false)
+  expenses      Expense[]
+  contributions Contribution[]
+}
+
+model Vendor {
+  id                     String       @id @default(cuid())
+  name                   String
+  categoryId             String?
+  category               Category?    @relation(fields: [categoryId], references: [id])
+  eventId                String?
+  event                  Event?       @relation(fields: [eventId], references: [id])
+  status                 String       @default("CONSIDERING") // CONSIDERING | QUOTED | BOOKED | PAID | DECLINED
+  contactName            String?
+  phone                  String?
+  whatsapp               String?
+  email                  String?
+  website                String?
+  instagram              String?
+  address                String?
+  quotedCents            Int?
+  quotedOriginalAmount   Float?
+  quotedOriginalCurrency String?
+  contractSummary        String? // AI summary of the contract/quote text
+  notes                  String?
+  rating                 Int?
+  expenses               Expense[]
+  payments               PaymentDue[]
+  attachments            Attachment[]
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+
+  @@index([status])
+}
+
+model PaymentDue {
+  id             String    @id @default(cuid())
+  vendorId       String
+  vendor         Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  label          String // "Deposit", "Balance", "Instalment 2 of 3"
+  dueDate        DateTime
+  amountCents    Int
+  status         String    @default("OPEN") // OPEN | PAID | CANCELLED
+  expenseId      String?   @unique // set when paid
+  expense        Expense?  @relation(fields: [expenseId], references: [id])
+  reminderSentAt DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([status, dueDate])
+}
+
+model Expense {
+  id               String       @id @default(cuid())
+  description      String
+  amountCents      Int // USD
+  originalAmount   Float?
+  originalCurrency String? // ISO 4217
+  fxRate           Float? // original -> USD
+  date             DateTime
+  eventId          String
+  event            Event        @relation(fields: [eventId], references: [id])
+  categoryId       String?
+  category         Category?    @relation(fields: [categoryId], references: [id])
+  vendorId         String?
+  vendor           Vendor?      @relation(fields: [vendorId], references: [id])
+  funderId         String
+  funder           Funder       @relation(fields: [funderId], references: [id])
+  source           String       @default("MANUAL") // MANUAL | QUICK_ADD | RECEIPT | BANK | CSV | ASSISTANT
+  notes            String?
+  createdById      String
+  visibility       String       @default("SHARED") // SHARED only in v1; reserved
+  paymentDue       PaymentDue?
+  transaction      Transaction?
+  attachments      Attachment[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([eventId, date])
+  @@index([funderId])
+}
+
+model Contribution {
+  id          String   @id @default(cuid())
+  funderId    String
+  funder      Funder   @relation(fields: [funderId], references: [id])
+  amountCents Int
+  date        DateTime
+  note        String?
+  createdAt   DateTime @default(now())
+}
+
+model Settlement {
+  id          String   @id @default(cuid())
+  fromUserId  String
+  toUserId    String
+  amountCents Int
+  note        String?
+  settledAt   DateTime @default(now())
+}
+
+model Attachment {
+  id            String   @id @default(cuid())
+  expenseId     String?
+  expense       Expense? @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  vendorId      String?
+  vendor        Vendor?  @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  kind          String // RECEIPT | INVOICE | CONTRACT | OTHER
+  path          String // relative to UPLOAD_DIR
+  mime          String
+  bytes         Int
+  extractedText String? // AI transcription for search
+  createdAt     DateTime @default(now())
+}
+
+model FxRate {
+  id    String @id @default(cuid())
+  day   String // YYYY-MM-DD
+  base  String // USD
+  quote String // KES
+  rate  Float
+
+  @@unique([day, base, quote])
+}
+
+// ---------- Bank ----------
+model PlaidItem {
+  id             String         @id @default(cuid())
+  userId         String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId         String         @unique
+  accessTokenEnc String // AES-256-GCM with APP_ENCRYPTION_KEY
+  institution    String?
+  cursor         String?
+  lastSyncAt     DateTime?
+  lastError      String?
+  accounts       PlaidAccount[]
+  createdAt      DateTime       @default(now())
+}
+
+model PlaidAccount {
+  id           String        @id @default(cuid())
+  itemId       String
+  item         PlaidItem     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  accountId    String        @unique
+  name         String
+  mask         String?
+  subtype      String?
+  watched      Boolean       @default(true) // untick cards that are never wedding-related
+  transactions Transaction[]
+}
+
+model Transaction {
+  id           String        @id @default(cuid())
+  accountId    String?
+  account      PlaidAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  externalId   String        @unique // plaid transaction_id, or csv hash
+  source       String // PLAID | CSV
+  date         DateTime
+  name         String
+  merchant     String?
+  amountCents  Int // positive = money out
+  currency     String        @default("USD")
+  pending      Boolean       @default(false)
+  status       String        @default("NEW") // NEW | LINKED | IGNORED
+  aiIsWedding  Boolean?
+  aiEventId    String?
+  aiCategoryId String?
+  aiVendorId   String?
+  aiConfidence Float?
+  aiReason     String?
+  expenseId    String?       @unique
+  expense      Expense?      @relation(fields: [expenseId], references: [id])
+  createdAt    DateTime      @default(now())
+
+  @@index([status, date])
+}
+
+// ---------- Plan ----------
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  notes       String?
+  dueDate     DateTime?
+  eventId     String?
+  event       Event?    @relation(fields: [eventId], references: [id])
+  assigneeId  String?
+  assignee    User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  status      String    @default("OPEN") // OPEN | DONE
+  priority    String    @default("P2") // P1 | P2 | P3
+  milestone   Boolean   @default(false) // shows on the timeline
+  source      String    @default("USER") // USER | AI
+  sortOrder   Int       @default(0)
+  createdById String
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, dueDate])
+}
+
+model Note {
+  id          String   @id @default(cuid())
+  kind        String   @default("NOTE") // NOTE | DECISION | IDEA | QUESTION
+  title       String?
+  body        String
+  pinned      Boolean  @default(false)
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ---------- Guests ----------
+model Guest {
+  id        String       @id @default(cuid())
+  firstName String
+  lastName  String?
+  household String? // grouping label, e.g. "Mugambi, Meru"
+  side      String       @default("BOTH") // BRIDE | GROOM | BOTH
+  email     String?
+  phone     String?
+  city      String?
+  country   String?
+  dietary   String?
+  plusOnes  Int          @default(0)
+  notes     String?
+  events    GuestEvent[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model GuestEvent {
+  id      String @id @default(cuid())
+  guestId String
+  guest   Guest  @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  rsvp    String @default("NOT_INVITED") // NOT_INVITED | INVITED | YES | NO | MAYBE
+
+  @@unique([guestId, eventId])
+}
+
+// ---------- Assistant, AI, brief, system ----------
+model ChatThread {
+  id          String        @id @default(cuid())
+  title       String?
+  createdById String
+  messages    ChatMessage[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model ChatMessage {
+  id        String     @id @default(cuid())
+  threadId  String
+  thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  role      String // user | assistant | tool
+  content   String // text; tool calls serialized as JSON text in toolCalls
+  toolCalls String? // JSON string
+  authorId  String? // user id for user turns
+  model     String?
+  createdAt DateTime   @default(now())
+
+  @@index([threadId, createdAt])
+}
+
+model AiUsage {
+  id           String   @id @default(cuid())
+  provider     String
+  model        String
+  feature      String // QUICK_ADD | RECEIPT | TRIAGE | ASSISTANT | FORECAST | BUDGET_DRAFT | TIMELINE | DIGEST | BRIEF | CONTRACT
+  inputTokens  Int
+  outputTokens Int
+  cachedTokens Int      @default(0)
+  costMicros   Int? // USD micro-dollars, from a rate table; null if unpriced
+  latencyMs    Int?
+  fellBack     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
+
+model ModelCache {
+  id        String   @id @default(cuid())
+  provider  String   @unique
+  json      String // JSON string: [{id, displayName, createdAt}]
+  fetchedAt DateTime
+}
+
+model BriefSnapshot {
+  id          String   @id @default(cuid())
+  markdown    String
+  words       Int
+  generatedAt DateTime @default(now())
+  trigger     String // CRON | MANUAL
+}
+
+model Activity {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String // CREATED | UPDATED | DELETED | PAID | CONFIRMED | SETTLED | ...
+  entityType String // Expense | Vendor | PaymentDue | Task | Guest | Note | Event | Transaction | Settings
+  entityId   String?
+  summary    String // "Annette added Ruracio venue hold, $800"
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+}
