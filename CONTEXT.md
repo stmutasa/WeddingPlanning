@@ -31,6 +31,7 @@ Lineage: Simi's earlier apps. **Kindred** (Next.js + Prisma/SQLite + Auth.js Goo
 | 2026-09-14 | Simi's timezone: New York. | Simi |
 | 2026-09-14 | Build started: Phase A → B → C → D in sequence. | Simi |
 | 2026-09-14 | Phase A done. Deviations accepted: Prisma pinned to 6.x (7 removes `datasource.url` and needs driver adapters; revisit later); Next 16 renamed `middleware.ts` to `proxy.ts`; zod 4; icon script uses a generic bold sans, not Syne. | Fable |
+| 2026-09-14 | Phase B done. Deviations accepted: services take the acting `userId` first (`payments.schedule(userId, vendorId, items)`, `transactions.ignore(userId, id)`) so every write can append its Activity row; `settle.record()` takes an optional explicit direction so `POST /api/settlements` keeps its Phase A body; the three timezone-sensitive cron jobs hang off one hourly tick because node-cron pins a schedule to one zone; the fallback chain also fires on 401/403 (a rejected key makes that provider unusable); OpenAI `text.format` needs a `name` alongside `schema`/`strict`; CSV parsing is hand-rolled rather than adding `csv-parse`; the weekly digest is stored as a `Note` of kind `DIGEST`. | Fable |
 | 2026-09-14 | The Brief: nightly regenerated markdown for external AI sessions, with token URL and optional Drive sync. | Simi |
 | 2026-09-14 | Railway + SQLite on a volume. | default accepted |
 | 2026-09-14 | Lanes: Fable plans and QAs, Opus 5 writes logic and screens, Sonnet 5 writes plumbing. | Simi |

@@ -186,6 +186,10 @@ function shouldFallback(err: unknown): boolean {
   if (status === 400 && isUnknownModel(err)) return true;
   if (status === 429) return true;
   if (status != null && status >= 500) return true;
+  // Beyond DESIGN.md §7's list: a rejected or forbidden key makes that
+  // provider unusable for every call, which is precisely when the backup
+  // should carry the load rather than the whole feature going dark.
+  if (status === 401 || status === 403) return true;
   const name = err instanceof Error ? err.name : "";
   return (
     name === "APIConnectionTimeoutError" ||

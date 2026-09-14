@@ -27,6 +27,9 @@ export async function GET() {
     notes,
     guests,
     activity,
+    attachments,
+    plaidItems,
+    fxRates,
   ] = await Promise.all([
     db.wedding.findUnique({ where: { id: "main" } }),
     db.appSettings.findUnique({ where: { id: "main" } }),
@@ -44,6 +47,12 @@ export async function GET() {
     db.note.findMany(),
     db.guest.findMany({ include: { events: true } }),
     db.activity.findMany({ orderBy: { createdAt: "desc" }, take: 500 }),
+    db.attachment.findMany({ select: { id: true, expenseId: true, vendorId: true, kind: true, mime: true, bytes: true, createdAt: true } }),
+    db.plaidItem.findMany({
+      // The encrypted access token is a secret and never leaves the server.
+      select: { id: true, itemId: true, institution: true, lastSyncAt: true, lastError: true, accounts: true },
+    }),
+    db.fxRate.findMany({ orderBy: { day: "desc" }, take: 200 }),
   ]);
 
   return NextResponse.json({
@@ -64,5 +73,8 @@ export async function GET() {
     notes,
     guests,
     activity,
+    attachments,
+    plaidItems,
+    fxRates,
   });
 }
