@@ -66,7 +66,7 @@ export function VendorsTab() {
         <div className="grid gap-3 sm:grid-cols-2">
           {vendors.map((vendor) => (
             <Card key={vendor.id} className="flex flex-col gap-2">
-              <button onClick={() => setOpenId(vendor.id)} className="focus-ring text-left">
+              <button onClick={() => setOpenId(vendor.id)} className="focus-ring min-h-11 text-left">
                 <div className="flex items-start justify-between gap-2">
                   <span className="font-display text-[15px] font-bold text-ink">{vendor.name}</span>
                   {vendor.status === "BOOKED" || vendor.status === "PAID" ? (

@@ -44,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${syne.variable} ${dmSans.variable} h-full`}>
       <body className="min-h-full flex flex-col font-body bg-bg text-ink antialiased">
         {children}
-        <ServiceWorkerRegister />
+        <ServiceWorkerRegister appName={appName} />
       </body>
     </html>
   );

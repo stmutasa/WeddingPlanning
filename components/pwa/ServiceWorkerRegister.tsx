@@ -2,12 +2,13 @@
 
 import { useEffect } from "react";
 
-/** Registers public/sw.js once the page has loaded. No push UI yet (Phase B). */
-export function ServiceWorkerRegister() {
+/** Registers public/sw.js once the page has loaded; Settings subscribes to push through it. */
+export function ServiceWorkerRegister({ appName }: { appName: string }) {
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
     const register = () => {
-      navigator.serviceWorker.register("/sw.js").catch(() => {
+      // The name rides along on the URL: a static worker cannot read env.
+      navigator.serviceWorker.register(`/sw.js?app=${encodeURIComponent(appName)}`).catch(() => {
         // Non-fatal: the app still works without an installed service worker.
       });
     };
@@ -17,7 +18,7 @@ export function ServiceWorkerRegister() {
       window.addEventListener("load", register);
       return () => window.removeEventListener("load", register);
     }
-  }, []);
+  }, [appName]);
 
   return null;
 }

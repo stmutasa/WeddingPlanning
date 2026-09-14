@@ -60,7 +60,7 @@ export function TopBar({
       <div className="relative">
         <button
           onClick={() => setOpen((v) => !v)}
-          className="focus-ring flex items-center gap-2 rounded-full py-1 pl-1 pr-2"
+          className="focus-ring flex min-h-11 items-center gap-2 rounded-full py-1 pl-1 pr-2"
           aria-haspopup="menu"
           aria-expanded={open}
         >
@@ -97,7 +97,7 @@ export function TopBar({
                 onClick={cycleTheme}
                 disabled={isPending}
                 className={clsx(
-                  "focus-ring flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-ink hover:bg-sunken"
+                  "focus-ring flex min-h-11 w-full items-center justify-between rounded-md px-3 py-2 text-sm text-ink hover:bg-sunken"
                 )}
               >
                 <span>Theme</span>
@@ -106,7 +106,7 @@ export function TopBar({
               <form action={signOutAction}>
                 <button
                   type="submit"
-                  className="focus-ring flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-danger hover:bg-sunken"
+                  className="focus-ring flex min-h-11 w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-danger hover:bg-sunken"
                 >
                   <SignOutIcon width={18} height={18} /> Sign out
                 </button>
@@ -132,7 +132,7 @@ function MenuLink({
     <Link
       href={href}
       onClick={onClick}
-      className="focus-ring flex items-center gap-2 rounded-md px-3 py-2 text-sm text-ink hover:bg-sunken"
+      className="focus-ring flex min-h-11 items-center gap-2 rounded-md px-3 py-2 text-sm text-ink hover:bg-sunken"
     >
       {children}
     </Link>

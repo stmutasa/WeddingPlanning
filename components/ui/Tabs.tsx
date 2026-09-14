@@ -51,7 +51,7 @@ export function Tabs({ items, value, onChange, className }: TabsProps) {
             aria-selected={active}
             onClick={() => onChange(item.value)}
             className={clsx(
-              "focus-ring min-h-9 flex-1 whitespace-nowrap rounded-md px-3 text-[13px] font-semibold transition-colors",
+              "focus-ring min-h-11 flex-1 whitespace-nowrap rounded-md px-3 text-[13px] font-semibold transition-colors",
               active ? "bg-primary text-on-primary" : "text-ink-soft"
             )}
           >

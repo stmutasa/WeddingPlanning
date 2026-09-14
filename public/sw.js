@@ -1,9 +1,14 @@
-// Harusi service worker (DESIGN.md §9). No push UI yet — Phase B wires
-// web-push subscriptions; the handlers below are ready for it.
+// Service worker (DESIGN.md §9): offline shell, plus the push and
+// notification-click handlers Settings subscribes through.
+
+// The app name comes from APP_NAME, which a static file cannot read, so the
+// page passes it on the registration URL (?app=…).
+const APP_NAME = new URL(self.location.href).searchParams.get("app") || "";
+const CACHE_PREFIX = (APP_NAME || "app").toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
 const CACHE_VERSION = "v1";
-const PRECACHE = `harusi-precache-${CACHE_VERSION}`;
-const RUNTIME = `harusi-runtime-${CACHE_VERSION}`;
+const PRECACHE = `${CACHE_PREFIX}-precache-${CACHE_VERSION}`;
+const RUNTIME = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
   "/offline",
@@ -76,10 +81,10 @@ self.addEventListener("push", (event) => {
   try {
     payload = event.data.json();
   } catch {
-    payload = { title: "Harusi", body: event.data.text() };
+    payload = { title: APP_NAME, body: event.data.text() };
   }
 
-  const title = payload.title || "Harusi";
+  const title = payload.title || APP_NAME || "Update";
   const options = {
     body: payload.body || "",
     icon: "/icons/icon-192.png",
