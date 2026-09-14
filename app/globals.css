@@ -1,0 +1,379 @@
+@import "tailwindcss";
+
+/*
+ * Kanga design tokens (DESIGN.md §5.1).
+ * Light values live on bare :root; dark values are set both under
+ * `[data-theme="dark"]` (explicit user choice) and under the
+ * prefers-color-scheme guard for "system" (no explicit choice made).
+ * Components must reference the @theme utilities below (bg-bg, text-ink,
+ * border-line, ...) — no inline hex in component files.
+ */
+
+:root {
+  --bg: #f6f1e7;
+  --card: #fffdf8;
+  --sunken: #ede6d8;
+  --ink: #191512;
+  --ink-soft: #6b5f55;
+  --line: rgba(25, 21, 18, 0.14);
+  --primary: #1f2a6b;
+  --on-primary: #f6f1e7;
+  --highlight: #e8a317;
+  --on-highlight: #191512;
+  --ok: #2f6b4f;
+  --warn: #d9671f;
+  --danger: #b8312f;
+
+  --ev-ruracio: #e8a317;
+  --ev-wedding: #1f2a6b;
+  --ev-honeymoon: #2f6b4f;
+  --ev-party: #7a3e9d;
+  --ev-general: #6b5f55;
+
+  --hue-pink: #d95d7a;
+  --hue-teal: #0f7c86;
+  --hue-violet: #7a3e9d;
+  --hue-orange: #d9671f;
+  --hue-green: #2f6b4f;
+  --hue-blue: #2f4c8a;
+  --hue-red: #b8312f;
+  --hue-amber: #c8841a;
+
+  --band-a: #b8312f;
+  --band-b: #1f2a6b;
+  --band-c: #e8a317;
+
+  --shadow-sheet: 0 8px 40px rgba(25, 21, 18, 0.22);
+
+  /* Cards: 2px ink border in light, 1px hairline in dark (DESIGN.md §5.3). */
+  --card-border-width: 2px;
+  --card-border-color: var(--ink);
+  --input-focus-border: var(--ink);
+
+  /* Mobile tab bar (DESIGN.md §5.3): primary bg in light, card bg in dark. */
+  --tabbar-bg: var(--primary);
+  --tabbar-fg: var(--on-primary);
+  --tabbar-fg-active: var(--highlight);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1430;
+    --card: #172050;
+    --sunken: #0b0f24;
+    --ink: #f3eee3;
+    --ink-soft: #b9bfdd;
+    --line: rgba(243, 238, 227, 0.14);
+    --primary: #f0b429;
+    --on-primary: #1a1400;
+    --highlight: #f0b429;
+    --on-highlight: #1a1400;
+    --ok: #6fcf97;
+    --warn: #f5a25d;
+    --danger: #f07a78;
+
+    --ev-ruracio: #f0b429;
+    --ev-wedding: #7c8cff;
+    --ev-honeymoon: #6fcf97;
+    --ev-party: #c98bff;
+    --ev-general: #b9bfdd;
+
+    --hue-pink: #ff8fab;
+    --hue-teal: #5bd1db;
+    --hue-violet: #a569c9;
+    --hue-orange: #f28c4c;
+    --hue-green: #4f9b76;
+    --hue-blue: #5878c0;
+    --hue-red: #e2635f;
+    --hue-amber: #e8a83d;
+
+    --band-a: #f07a78;
+    --band-b: #7c8cff;
+    --band-c: #f0b429;
+
+    --shadow-sheet: 0 8px 40px rgba(0, 0, 0, 0.5);
+
+    --card-border-width: 1px;
+    --card-border-color: var(--line);
+    --input-focus-border: var(--primary);
+
+    --tabbar-bg: var(--card);
+    --tabbar-fg: var(--ink-soft);
+    --tabbar-fg-active: var(--highlight);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0f1430;
+  --card: #172050;
+  --sunken: #0b0f24;
+  --ink: #f3eee3;
+  --ink-soft: #b9bfdd;
+  --line: rgba(243, 238, 227, 0.14);
+  --primary: #f0b429;
+  --on-primary: #1a1400;
+  --highlight: #f0b429;
+  --on-highlight: #1a1400;
+  --ok: #6fcf97;
+  --warn: #f5a25d;
+  --danger: #f07a78;
+
+  --ev-ruracio: #f0b429;
+  --ev-wedding: #7c8cff;
+  --ev-honeymoon: #6fcf97;
+  --ev-party: #c98bff;
+  --ev-general: #b9bfdd;
+
+  --hue-pink: #ff8fab;
+  --hue-teal: #5bd1db;
+  --hue-violet: #a569c9;
+  --hue-orange: #f28c4c;
+  --hue-green: #4f9b76;
+  --hue-blue: #5878c0;
+  --hue-red: #e2635f;
+  --hue-amber: #e8a83d;
+
+  --band-a: #f07a78;
+  --band-b: #7c8cff;
+  --band-c: #f0b429;
+
+  --shadow-sheet: 0 8px 40px rgba(0, 0, 0, 0.5);
+
+  --card-border-width: 1px;
+  --card-border-color: var(--line);
+  --input-focus-border: var(--primary);
+
+  --tabbar-bg: var(--card);
+  --tabbar-fg: var(--ink-soft);
+  --tabbar-fg-active: var(--highlight);
+}
+
+@theme {
+  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-sunken: var(--sunken);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-highlight: var(--highlight);
+  --color-on-highlight: var(--on-highlight);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+
+  --color-ev-ruracio: var(--ev-ruracio);
+  --color-ev-wedding: var(--ev-wedding);
+  --color-ev-honeymoon: var(--ev-honeymoon);
+  --color-ev-party: var(--ev-party);
+  --color-ev-general: var(--ev-general);
+
+  --color-hue-pink: var(--hue-pink);
+  --color-hue-teal: var(--hue-teal);
+  --color-hue-violet: var(--hue-violet);
+  --color-hue-orange: var(--hue-orange);
+  --color-hue-green: var(--hue-green);
+  --color-hue-blue: var(--hue-blue);
+  --color-hue-red: var(--hue-red);
+  --color-hue-amber: var(--hue-amber);
+
+  --color-band-a: var(--band-a);
+  --color-band-b: var(--band-b);
+  --color-band-c: var(--band-c);
+
+  --shadow-sheet: var(--shadow-sheet);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+* {
+  border-color: var(--line);
+}
+
+/* ---- shared utilities (DESIGN.md §5.2 / §5.3) ---- */
+
+.label-tracked {
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+}
+
+.jina-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--danger);
+}
+:root[data-theme="dark"] .jina-text {
+  color: var(--highlight);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .jina-text {
+    color: var(--highlight);
+  }
+}
+
+/* Cards: border width/colour flip light->dark via the variables above,
+   so components never need a `dark:` variant to get this right. */
+.card-frame {
+  border-style: solid;
+  border-width: var(--card-border-width);
+  border-color: var(--card-border-color);
+}
+
+/* The one filled card in the system (DESIGN.md §5.3 "budget card"). */
+.budget-card {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-style: solid;
+  border-width: var(--card-border-width);
+  border-color: var(--ink);
+}
+:root[data-theme="dark"] .budget-card {
+  background: var(--card);
+  color: var(--ink);
+  border-width: 0;
+  border-top-width: 3px;
+  border-top-color: var(--highlight);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .budget-card {
+    background: var(--card);
+    color: var(--ink);
+    border-width: 0;
+    border-top-width: 3px;
+    border-top-color: var(--highlight);
+  }
+}
+
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* The kanga band: repeating stripe, 14px tall, edge to edge, aria-hidden. */
+.kanga-band {
+  height: 14px;
+  width: 100%;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--band-a) 0px,
+    var(--band-a) 10px,
+    var(--bg) 10px,
+    var(--bg) 14px,
+    var(--band-b) 14px,
+    var(--band-b) 24px,
+    var(--bg) 24px,
+    var(--bg) 28px,
+    var(--band-c) 28px,
+    var(--band-c) 38px,
+    var(--bg) 38px,
+    var(--bg) 42px
+  );
+  background-size: 42px 14px;
+}
+.kanga-band-vertical {
+  width: 14px;
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    180deg,
+    var(--band-a) 0px,
+    var(--band-a) 10px,
+    var(--bg) 10px,
+    var(--bg) 14px,
+    var(--band-b) 14px,
+    var(--band-b) 24px,
+    var(--bg) 24px,
+    var(--bg) 28px,
+    var(--band-c) 28px,
+    var(--band-c) 38px,
+    var(--bg) 38px,
+    var(--bg) 42px
+  );
+  background-size: 14px 42px;
+}
+
+/* Committed-money hatch: event colour at 40% opacity with a diagonal hatch. */
+.hatch-committed {
+  background-image: repeating-linear-gradient(
+    45deg,
+    currentColor 0px,
+    currentColor 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-check-pop {
+  animation: check-pop 220ms ease-out;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-up {
+  animation: slide-up 260ms ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-fade-in {
+  animation: fade-in 220ms ease-out;
+}
