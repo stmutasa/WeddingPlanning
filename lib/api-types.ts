@@ -367,7 +367,14 @@ export interface BriefDto {
   generatedAt: string;
   trigger: string;
   token: string;
-  drive: { enabled: boolean; available: boolean; fileId: string | null; url?: string | null };
+  drive: {
+    /** The FEATURE_DRIVE_BRIEF flag: without it the toggle is not offered. */
+    enabled: boolean;
+    fileId: string | null;
+    ownerUserId: string | null;
+    hasScope: boolean;
+    lastError: string | null;
+  };
 }
 
 export interface ChatThreadDto {

@@ -1,14 +1,11 @@
-import { PageHeader, EmptyState } from "@/components/ui";
+import { Suspense } from "react";
+import { PlanScreen } from "@/components/plan/PlanScreen";
+import AppLoading from "../loading";
 
-// TODO(phase-c): Plan screen tabs — Tasks / Timeline / Notes (DESIGN.md §6).
 export default function PlanPage() {
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader title="Plan" subtitle="Tasks · Timeline · Notes" />
-      <EmptyState
-        title="Plan screens come in Phase C"
-        description="Tasks grouped by due date, the wedding timeline, and shared notes will render here."
-      />
-    </div>
+    <Suspense fallback={<AppLoading />}>
+      <PlanScreen />
+    </Suspense>
   );
 }
