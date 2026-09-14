@@ -61,7 +61,7 @@ export function AskScreen() {
   const micAvailable = useSyncExternalStore(
     subscribeNever,
     () => Boolean(speechRecognition()),
-    () => false
+    () => false,
   );
 
   async function send(text: string) {
@@ -226,91 +226,93 @@ export function AskScreen() {
         </Card>
       ) : null}
 
-      <Card className="flex min-h-[40vh] flex-col gap-3">
-        {history.length === 0 && !pendingUser ? (
-          <div className="flex flex-col gap-3">
-            <p className="text-sm text-ink-soft">
-              Ask about the money, the vendors, the tasks or the guests. The assistant can add an
-              expense or a task for you; deleting and the total budget stay in your hands.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {SUGGESTED.map((prompt) => (
-                <button
-                  key={prompt}
-                  onClick={() => send(prompt)}
-                  disabled={Boolean(aiOff)}
-                  className="focus-ring min-h-11 rounded-lg border-2 border-ink px-3 text-left text-[13px] font-semibold text-ink disabled:opacity-50"
-                >
-                  {prompt}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : null}
-
-        <ul className="flex flex-col gap-3">
-          {history.map((message) => (
-            <li key={message.id}>
-              <Bubble role={message.role} text={message.content} toolCalls={message.toolCalls} />
-            </li>
-          ))}
-          {pendingUser ? (
-            <li>
-              <Bubble role="user" text={pendingUser} toolCalls={null} />
-            </li>
-          ) : null}
-          {toolCards.map((card) => (
-            <li key={card.id}>
-              <div className="card-frame rounded-lg bg-sunken px-3 py-2">
-                <NeutralBadge>{card.name.replace(/_/g, " ")}</NeutralBadge>
-                <p className="mt-1 text-sm text-ink">{card.result}</p>
+      {aiOff ? null : (
+        <Card className="flex min-h-[40vh] flex-col gap-3">
+          {history.length === 0 && !pendingUser ? (
+            <div className="flex flex-col gap-3">
+              <p className="text-sm text-ink-soft">
+                Ask about the money, the vendors, the tasks or the guests. The assistant can add an
+                expense or a task for you; deleting and the total budget stay in your hands.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {SUGGESTED.map((prompt) => (
+                  <button
+                    key={prompt}
+                    onClick={() => send(prompt)}
+                    className="focus-ring min-h-11 rounded-lg border-2 border-ink px-3 text-left text-[13px] font-semibold text-ink"
+                  >
+                    {prompt}
+                  </button>
+                ))}
               </div>
-            </li>
-          ))}
-          {streamingText ? (
-            <li>
-              <Bubble role="assistant" text={streamingText} toolCalls={null} />
-            </li>
+            </div>
           ) : null}
-          {sending && !streamingText ? (
-            <li>
-              <Skeleton className="h-4 w-40" />
-            </li>
-          ) : null}
-        </ul>
-      </Card>
+
+          <ul className="flex flex-col gap-3">
+            {history.map((message) => (
+              <li key={message.id}>
+                <Bubble role={message.role} text={message.content} toolCalls={message.toolCalls} />
+              </li>
+            ))}
+            {pendingUser ? (
+              <li>
+                <Bubble role="user" text={pendingUser} toolCalls={null} />
+              </li>
+            ) : null}
+            {toolCards.map((card) => (
+              <li key={card.id}>
+                <div className="card-frame rounded-lg bg-sunken px-3 py-2">
+                  <NeutralBadge>{card.name.replace(/_/g, " ")}</NeutralBadge>
+                  <p className="mt-1 text-sm text-ink">{card.result}</p>
+                </div>
+              </li>
+            ))}
+            {streamingText ? (
+              <li>
+                <Bubble role="assistant" text={streamingText} toolCalls={null} />
+              </li>
+            ) : null}
+            {sending && !streamingText ? (
+              <li>
+                <Skeleton className="h-4 w-40" />
+              </li>
+            ) : null}
+          </ul>
+        </Card>
+      )}
 
       {error ? <Banner tone="warn">{error}</Banner> : null}
 
-      <div className="flex items-end gap-2">
-        <Textarea
-          className="flex-1"
-          label="Ask anything"
-          rows={2}
-          value={input}
-          disabled={Boolean(aiOff)}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              void send(input);
-            }
-          }}
-        />
-        {micAvailable ? (
-          <Button
-            variant="secondary"
-            onClick={toggleMic}
-            aria-pressed={listening}
-            aria-label={listening ? "Stop dictating" : "Dictate"}
-          >
-            {listening ? "Stop" : "Mic"}
+      {aiOff ? null : (
+        <div className="flex items-end gap-2">
+          <Textarea
+            className="flex-1"
+            label="Ask anything"
+            rows={2}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                void send(input);
+              }
+            }}
+          />
+          {micAvailable ? (
+            <Button
+              variant="secondary"
+              onClick={toggleMic}
+              aria-pressed={listening}
+              aria-label={listening ? "Stop dictating" : "Dictate"}
+            >
+              {listening ? "Stop" : "Mic"}
+            </Button>
+          ) : null}
+          <Button onClick={() => send(input)} disabled={sending || !input.trim()}>
+            {sending ? "…" : "Send"}
           </Button>
-        ) : null}
-        <Button onClick={() => send(input)} disabled={sending || !input.trim() || Boolean(aiOff)}>
-          {sending ? "…" : "Send"}
-        </Button>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

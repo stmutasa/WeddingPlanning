@@ -3,6 +3,7 @@
 import { useDeferredValue, useMemo, useState } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/api";
+import { clsx } from "@/lib/clsx";
 import { useCatalog, useMe } from "@/lib/hooks";
 import { shortDate } from "@/lib/dates";
 import type { ExpenseListDto } from "@/lib/api-types";
@@ -29,6 +30,7 @@ export function ExpensesTab({
   const [eventId, setEventId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [funderId, setFunderId] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   const slugEvent = catalog.events.find((e) => e.slug === eventSlug);
   const activeEventId = eventId || slugEvent?.id || "";
@@ -44,11 +46,11 @@ export function ExpensesTab({
   }, [activeEventId, categoryId, funderId, deferredQ]);
 
   const { data } = useSWR<ExpenseListDto>(query, fetcher);
+  const activeFilters = [eventId, categoryId, funderId].filter(Boolean).length;
 
   return (
     <div className="flex flex-col gap-3">
       <Card>
-        <SectionLabel>Filters</SectionLabel>
         <div className="flex flex-col gap-3">
           <Input
             label="Search"
@@ -56,7 +58,23 @@ export function ExpensesTab({
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {/* The three dropdowns fill a phone screen on their own, so they
+              fold away there and stay open from tablet width up. */}
+          <button
+            type="button"
+            onClick={() => setShowFilters((v) => !v)}
+            aria-expanded={showFilters}
+            className="focus-ring flex min-h-11 items-center justify-between sm:hidden"
+          >
+            <SectionLabel>Filters{activeFilters ? ` · ${activeFilters}` : ""}</SectionLabel>
+            <span className="text-sm text-ink-soft">{showFilters ? "Hide" : "Show"}</span>
+          </button>
+          <div
+            className={clsx(
+              "grid-cols-1 gap-3 sm:grid sm:grid-cols-3",
+              showFilters ? "grid" : "hidden",
+            )}
+          >
             <Select
               label="Event"
               value={activeEventId}
