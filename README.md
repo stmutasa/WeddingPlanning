@@ -1,4 +1,4 @@
-# Wedding planner + expense tracker
+# Harusi
 
 Private, two-person, fully shared wedding planner and expense tracker for Annette and Simi. Nairobi, August 2027.
 
@@ -13,7 +13,7 @@ Private, two-person, fully shared wedding planner and expense tracker for Annett
 
 ## Status
 
-Phase 0 (planning) complete. Phase A (scaffold) not started. The app name and visual direction are pending Annette's pick from the lookbook.
+Phase 0 (planning) complete. Name: Harusi. Design: Kanga. Phase A (scaffold) in progress.
 
 ## Stack (planned)
 

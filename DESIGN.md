@@ -2,7 +2,7 @@
 
 **Design authority:** this document is the contract. Build agents implement exactly this; deviations only when something is technically impossible, and every deviation is noted in the phase report. Where this file and `PROMPTS.md` disagree on an AI contract, `PROMPTS.md` wins. Where this file and `CONTEXT.md` disagree on a decision, `CONTEXT.md` (newer) wins.
 
-**Working name:** the product name is being chosen by Annette from the lookbook (`docs/lookbook/index.html`). Until then the repo, package and wordmark use the placeholder `APP_NAME` (env, default `Pamoja`). Nothing else may hardcode a name.
+**Name:** **Harusi** (Swahili: wedding), chosen by Annette 2026-09-14. The wordmark is set in the app from `APP_NAME` (env, default `Harusi`); nothing else hardcodes it. Visual direction: **Kanga** (§5).
 
 ---
 
@@ -148,7 +148,8 @@ model Wedding {                       // exactly one row, id "main"
 model AppSettings {                   // exactly one row, id "main"; shared by both users
   id               String @id @default("main")
   aiPrimaryProvider String @default("openai")     // openai | anthropic
-  aiPrimaryModel   String  @default("")           // "" => env AI_MODEL
+  aiPrimaryModel   String  @default("")           // "" => env AI_MODEL, else resolved by AI_MODEL_MATCH
+  aiPrimaryResolvedFrom String @default("")       // "" | "env" | "match" | "user"
   aiBackupProvider String  @default("anthropic")
   aiBackupModel    String  @default("claude-opus-5")
   aiReasoning      String  @default("high")       // low | medium | high  (mapped per provider)
@@ -543,21 +544,101 @@ All services live in `lib/services/`, take the acting `userId`, write an `Activi
 
 ---
 
-## 5. Design system — chosen from the lookbook
+## 5. Design system — "Kanga" (chosen by Annette, 2026-09-14)
 
-The lookbook (`docs/lookbook/index.html`, published as an artifact) now offers two directions after Annette's first round: **A Stationery, in colour** (Kindred bones; each event owns a colour: Ruracio marigold `#D9A21B`, Wedding bougainvillea `#B4306A`, Honeymoon lagoon `#2E8A87`, Joint party jacaranda `#7259B8`; primary accent bougainvillea; a four-colour ribbon on the top edge; stacked budget bar by event) and **B Kanga** (East African textile; indigo, marigold, kanga red on cotton; a proverb strip). Ledger is retired. Annette picks; Simi may add a note. **Phase C must not start until `CONTEXT.md` §2 records the pick.** Phases A and B proceed with the placeholder tokens below and ship no visual polish.
+**Feel:** the kanga cloth as an app: unbleached cotton, hard black edges, saturated indigo, marigold and red used with confidence, and a proverb (the *jina*) on every kanga. Bold type, squared shapes, colour that always means something. Both themes: **cotton by day, indigo by night with marigold as the light source.** Reference render: `docs/lookbook/index.html`, direction B.
 
-Whatever the pick, these rules hold:
-- Both themes. `theme` per user (system/light/dark). Tokens defined once in `@theme`, never inline hex in components.
-- Two **person hues** (`UserSettings.hue`) used only for attribution: "who paid", "who added", assignee chips. Never for anything else.
-- **Event colours** (`Event.color`) are the only other categorical colour. They mark event chips, per-event bars and the stacked budget bar, and nothing else. Colour that is not a person, an event, or a semantic state is decoration and is not allowed.
-- Semantic colours separate from the accent: `ok` (paid, on track), `warn` (at risk, due soon), `danger` (over, overdue). One meaning each, everywhere.
-- Money: integer cents formatted `$43,580` (no cents unless < $100 or in a detail view); `tabular-nums` on every figure; original currency shown as a small secondary line ("KES 104,000 @ 130.0").
-- Hit targets ≥ 44pt; one-thumb reach for the primary action on every screen; visible pressed and focus states; reduced-motion respected.
-- Bottom tab bar on mobile (< 768px): **Home · Money · ＋ · Plan · Ask**. Desktop: left rail. `More` menu (avatar top-right): Guests, Vendors, Brief, Settings, theme toggle.
-- **Placeholder tokens for Phases A–B** (neutral, replaced in C): bg `#F3F1EC`/`#17161A`, surface `#FFFFFF`/`#201F24`, ink `#201D1A`/`#EEEBE6`, ink-soft `#6A645C`/`#A29C93`, line 12% ink, accent `#3F5E4A`/`#9DC2A8`, ok `#2F7D4F`, warn `#B7791F`, danger `#B23A3A`; font system sans.
+### 5.1 Colour tokens (`@theme` in `app/globals.css`; light on bare `:root`, dark under `[data-theme="dark"]` and the `prefers-color-scheme` guard)
 
-Direction token sheets (colours, type, radius, shadow rules) are in the lookbook's CSS under `.dir-a` and `.dir-b`; Phase C lifts the chosen one into `@theme` and writes the full component spec into this section before building.
+| Token | Light | Dark | Use |
+|---|---|---|---|
+| `bg` | `#F6F1E7` cotton | `#0F1430` night indigo | screen background |
+| `card` | `#FFFDF8` | `#172050` | cards, sheets |
+| `sunken` | `#EDE6D8` | `#0B0F24` | inputs, tracks, inset panels |
+| `ink` | `#191512` | `#F3EEE3` | primary text; light-theme card borders |
+| `ink-soft` | `#6B5F55` | `#B9BFDD` | secondary text, captions |
+| `line` | `rgba(25,21,18,.14)` | `rgba(243,238,227,.14)` | hairlines, dark-theme card borders |
+| `primary` | `#1F2A6B` indigo | `#F0B429` marigold | buttons, active tab, links, budget card fill (light), focus ring |
+| `on-primary` | `#F6F1E7` | `#1A1400` | text on primary |
+| `highlight` | `#E8A317` marigold | `#F0B429` | progress fills, FAB, "current" markers |
+| `on-highlight` | `#191512` | `#1A1400` | |
+| `ok` | `#2F6B4F` | `#6FCF97` | paid, on track |
+| `warn` | `#D9671F` | `#F5A25D` | at risk, due within 7 days |
+| `danger` | `#B8312F` kanga red | `#F07A78` | over budget, overdue |
+| `ev-ruracio` | `#E8A317` | `#F0B429` | event colour |
+| `ev-wedding` | `#1F2A6B` | `#7C8CFF` | event colour (dark theme shifts to periwinkle so it reads on night indigo) |
+| `ev-honeymoon` | `#2F6B4F` | `#6FCF97` | event colour |
+| `ev-party` | `#7A3E9D` | `#C98BFF` | event colour |
+| `ev-general` | `#6B5F55` | `#B9BFDD` | event colour |
+| `hue-pink` | `#D95D7A` | `#FF8FAB` | person hue (Annette default) |
+| `hue-teal` | `#0F7C86` | `#5BD1DB` | person hue (Simi default) |
+| `hue-violet` / `hue-orange` / `hue-green` / `hue-blue` / `hue-red` / `hue-amber` | `#7A3E9D` `#D9671F` `#2F6B4F` `#2F4C8A` `#B8312F` `#C8841A` | lifted ~18% lightness | selectable person hues |
+| `band-a` / `band-b` / `band-c` | `#B8312F` / `#1F2A6B` / `#E8A317` | `#F07A78` / `#7C8CFF` / `#F0B429` | the kanga band stripes |
+| `shadow-sheet` | `0 8px 40px rgba(25,21,18,.22)` | `0 8px 40px rgba(0,0,0,.5)` | sheets and modals only |
+
+**Colour rules (enforced in review):**
+- Colour is categorical and has exactly four jobs: **primary** (interaction), **person** (attribution: who paid / who added / assignee), **event** (which event), **semantic** (ok / warn / danger). Anything else is decoration and is not allowed.
+- **Event chips are filled** (12% tint of the event colour, event-colour text, radius 6). **Semantic pills are outlined** (1.5px border + text in the semantic colour, no fill, with a glyph: ✓ on track, ! at risk, × over). Form separates the two even where hues are close (Honeymoon green vs `ok`).
+- **Person chips are round** (pill radius, 12% tint, hue text) with a 8px hue dot in lists.
+- The budget bar is **stacked by event colour** on `sunken` track; committed money renders as the event colour at 40% with a diagonal hatch (`repeating-linear-gradient`, 3px).
+- `danger` and `hue-red` share a hex; the red person hue is therefore not a default and Settings warns when picked.
+
+### 5.2 Typography (Google Fonts via `next/font/google`: Syne 600/700/800, DM Sans 400/500/600/700)
+
+| Role | Spec |
+|---|---|
+| Wordmark "HARUSI" | Syne 800, uppercase, letter-spacing −0.03em, 28px (header) / 56px (login) |
+| Screen title | Syne 700, 26px, −0.02em |
+| Section label | DM Sans 10.5px / 600, uppercase, +0.12em, `ink-soft` |
+| Card heading | Syne 700, 15px |
+| Body | DM Sans 15px / 400, line-height 1.45 |
+| Big money | DM Sans 700, 36px, −0.02em, `tabular-nums` |
+| Row money | DM Sans 600, 14px, `tabular-nums` |
+| Jina (proverb strip) | Syne 700, 11px, uppercase, +0.08em, `danger` red in light / `highlight` in dark |
+| Button | DM Sans 700, 13px, uppercase, +0.06em |
+
+### 5.3 Shape & space
+- Base unit 4. Screen padding 16. Card padding 14–16. Gap between cards 12. Sections 28 apart.
+- **Cards:** radius 10; light theme **2px `ink` border**, dark theme 1px `line`; no shadows. The **budget card** is the one filled card: `primary` fill with `on-primary` text and `highlight` progress (light); in dark it is `card` with a marigold top border 3px.
+- **Buttons:** radius 8, padding 12×18; primary = solid `primary`; secondary = 2px `ink` border, transparent; danger = solid `danger`. Pressed: translate 1px down + 8% darken. 44pt minimum.
+- **FAB (＋):** 52px circle, `highlight` fill, `ink` plus, raised 18px above the tab bar, 2px `ink` ring in light.
+- **Inputs:** `sunken` fill, 2px `ink` border on focus (light) / `primary` border (dark), radius 8, 15px text.
+- **Chips:** radius 6 (event), pill (person), outlined (semantic). 10.5–11px / 600.
+- **Tab bar (mobile):** `primary` background (light) / `card` (dark), 5 items Home · Money · ＋ · Plan · Ask, icons 20px stroke 1.7, labels DM Sans 10px / 500 in `on-primary` at 70%, active = `highlight` and 100%. A **kanga band** (14px repeating stripe `band-a` 10px · `bg` 4px · `band-b` 10px · `bg` 4px · `band-c` 10px · `bg` 4px) sits directly above the tab bar and directly below the status bar on every screen. Desktop: left rail 220px in `primary`, wordmark at top, the band as a vertical stripe along the rail's outer edge.
+- **Jina strip:** Home only, under the top band: today's proverb, centred. Tap → sheet with the translation and "why it's here". Rotates daily by day-of-year over the list in 5.5.
+- **Toasts:** `card` fill, 2px `ink` border (light), radius 8, bottom-centre above the tab bar, 3s.
+- **Sheets:** slide up, radius 16 top corners, `shadow-sheet`, drag handle.
+- **Motion:** `check-pop` on completing a task/payment, `slide-up` 260ms on sheets, `fade-in` 220ms on lists; all disabled under `prefers-reduced-motion`.
+
+### 5.4 Signature components
+- **KangaBand** — the stripe, `aria-hidden`, 14px, edge-to-edge; also used as the divider above "Recent activity" on Home.
+- **BudgetCard** — "Remaining of $50,000", big money, stacked bar by event, "N months to go · next payment …" line.
+- **EventRow** — event dot + name, `$paid / $envelope` in row money, 5px stacked mini-bar (paid solid, committed hatched), outlined status pill at right.
+- **MoneyRow** — description (600), amount right (tabular), second line: event chip · date · person chip.
+- **StatusPill** — outlined semantic pill with glyph.
+- **PersonChip / HueDot** — attribution only.
+- **JinaStrip** — proverb line + sheet.
+- **StackedBar** — shared by BudgetCard, EventRow, the Budget tab and the Brief page's summary.
+
+### 5.5 Jina list (Swahili proverbs; Annette to correct any wording)
+1. Mali bila daftari hupotea bila habari — Wealth without a ledger disappears without notice. *(the app's motto; shown on first run and on the login screen)*
+2. Haba na haba hujaza kibaba — Little by little fills the measure.
+3. Akiba haiozi — Savings do not rot.
+4. Pole pole ndio mwendo — Slowly is the way to go.
+5. Subira huvuta heri — Patience draws blessings.
+6. Bandu bandu humaliza gogo — Chip by chip finishes the log.
+7. Umoja ni nguvu — Unity is strength.
+8. Penye nia ipo njia — Where there is a will there is a way.
+9. Haraka haraka haina baraka — Hurry has no blessing.
+10. Mchagua jembe si mkulima — One who is fussy about hoes is no farmer.
+11. Chema chajiuza, kibaya chajitembeza — A good thing sells itself; a bad thing advertises itself.
+12. Mgaagaa na upwa hali wali mkavu — One who forages the shore does not eat dry rice.
+
+### 5.6 App icon
+Indigo `#1F2A6B` square (maskable-safe), cotton "H" in Syne 800 centred, a marigold dot after it, and the kanga band along the bottom 18%. `theme-color` `#F6F1E7` (light) / `#0F1430` (dark). Generated by `scripts/generate-icons.ts` with `sharp` from inline SVG.
+
+### 5.7 Accessibility
+Body contrast ≥ 4.5:1 in both themes (checked: ink on cotton 14.9:1; `ink-soft` on cotton 5.6:1; `on-primary` on indigo 11.2:1; marigold text is never used on cotton for body, only on indigo). All interactive elements 44pt with visible focus (2px `primary` outline, 2px offset). Dynamic type ±1 step without truncating the budget card. Reduced motion respected.
 
 ---
 
@@ -605,7 +686,7 @@ ai.chat(opts: { feature: "ASSISTANT"; system; messages; tools: ToolDef[]; onText
 ai.models(): Promise<{ openai: ModelInfo[]; anthropic: ModelInfo[]; fetchedAt }>
 ```
 
-- **Model selection:** primary = `AppSettings.aiPrimaryModel || env AI_MODEL` on `aiPrimaryProvider`; backup = `aiBackupModel` on `aiBackupProvider`. Try primary; on 404/400-unknown-model/429-after-one-retry/5xx/timeout/refusal, try backup once and set `fellBack`. Both fail → typed `AiUnavailable` → routes return 502 `{ error }`, UI shows the non-AI path (manual form still works). AI disabled or no keys → `{ disabled: true }` and the UI hides AI affordances.
+- **Model selection:** primary = `AppSettings.aiPrimaryModel || env AI_MODEL` on `aiPrimaryProvider`; backup = `aiBackupModel` on `aiBackupProvider`. **Resolution by match:** when `AI_MODEL` is blank and `AI_MODEL_MATCH` is set (default `astra`), `lib/ai/models.ts` resolves the primary at boot and after each cache refresh to the newest OpenAI model whose id contains the match string (case-insensitive), writes it to `AppSettings.aiPrimaryModel` with `aiPrimaryResolvedFrom = "match"`, and logs it. Settings shows the resolved id with a "resolved from 'astra'" note. If nothing matches, the backup runs and Settings shows a banner naming the problem. Simi's stated model is "ChatGPT Astra 6"; the exact API id is not known at contract time, which is why this exists. Try primary; on 404/400-unknown-model/429-after-one-retry/5xx/timeout/refusal, try backup once and set `fellBack`. Both fail → typed `AiUnavailable` → routes return 502 `{ error }`, UI shows the non-AI path (manual form still works). AI disabled or no keys → `{ disabled: true }` and the UI hides AI affordances.
 - **Model list:** `openai.models.list()` filtered to ids starting `gpt-`, `o` followed by a digit, or containing `chatgpt`; `anthropic.models.list()` all (it only returns chat models; use `display_name`, `max_input_tokens`, `capabilities` when present). Cache in `ModelCache` 1h; Settings shows both groups plus a free-text override field ("model id not in the list") because new ids appear before caches refresh.
 - **OpenAI adapter (`openai.ts`):** Responses API. `reasoning: { effort }` mapped 1:1 from `aiReasoning`; structured output via `text.format = { type: "json_schema", strict: true, schema }`; tools via `tools: [{ type: "function", strict: true, ... }]`; images as `input_image` (base64 data URL); stream with `client.responses.stream`. Never send `temperature` to reasoning models.
 - **Anthropic adapter (`anthropic.ts`):** Messages API on `@anthropic-ai/sdk`. Default backup model `claude-opus-5`. **Never send `temperature`/`top_p`/`top_k`; do not send `thinking` (adaptive by default on Opus 5)**; effort via `output_config.effort` (`low|medium|high`); structured output via `client.messages.parse` with `output_config.format` (`zodOutputFormat`); tools with `strict: true`; images as `{ type: "image", source: { type: "base64", media_type, data } }`; streaming via `client.messages.stream(...).finalMessage()`; **always check `stop_reason === "refusal"`** and treat it as a fallback trigger; parse tool `input` with `JSON.parse`, never string-match. Prompt caching: put the static system prompt + tool list first with `cache_control: { type: "ephemeral" }`; volatile context (today's date, budget state) goes in the first user turn.
@@ -659,7 +740,7 @@ ai.models(): Promise<{ openai: ModelInfo[]; anthropic: ModelInfo[]; fetchedAt }>
 
 **`.env.example`**
 ```
-APP_NAME=Pamoja
+APP_NAME=Harusi
 DATABASE_URL="file:./prisma/dev.db"          # Railway: file:/data/app.db
 UPLOAD_DIR=./uploads                         # Railway: /data/uploads
 AUTH_SECRET=
@@ -669,7 +750,8 @@ GOOGLE_CLIENT_SECRET=
 ALLOWED_EMAILS=annettemugambi@gmail.com,stmutasa@gmail.com
 OPENAI_API_KEY=
 ANTHROPIC_API_KEY=
-AI_MODEL=                                    # OpenAI id Simi confirms; primary
+AI_MODEL=                                    # exact OpenAI id if known; leave blank to resolve by AI_MODEL_MATCH
+AI_MODEL_MATCH=astra                         # newest OpenAI model whose id contains this becomes primary
 AI_BACKUP_MODEL=claude-opus-5
 PLAID_CLIENT_ID=
 PLAID_SECRET=
@@ -691,7 +773,7 @@ FEATURE_GMAIL_TRIAGE=false                   # phase 2
 - **Phase 0 — Fable (done):** this contract, `PROMPTS.md`, lookbook, `CONTEXT.md`.
 - **Phase A — Sonnet 5** (boilerplate/plumbing): scaffold per §2, schema §3 + migration, `lib/types.ts`, auth §9, all CRUD routes with zod + session gate, UI primitives (Button, Card, Chip, Sheet, Input, Select, Textarea, Toggle, Tabs, Toast, Skeleton, EmptyState, PageHeader, SectionLabel, Money, HueDot), app shell with tab bar + rail, placeholder screens, PWA files (no push UI yet), `lib/money/*` with vitest tests, scripts (seed, icons, vapid), Dockerfile, `railway.toml`, `.env.example`, README skeleton. Placeholder tokens from §5. **Exit:** `npm run build` green, `npm test` green, `migrate dev` + `seed --demo` succeed.
 - **Phase B — Opus 5** (logic): §4 services, §7 AI engine incl. model list + fallback + usage, all `PROMPTS.md` contracts, Plaid + CSV + inbox triage, FX, forecast + settle-up, Brief §8 incl. token route (+ Drive behind flag), scheduler, push, digest, export, `scripts/smoke.ts`. **Exit:** build + tests green, `npm run smoke` passes, `curl /api/brief.md?token=…` returns all 15 headings.
-- **Phase C — Opus 5** (UI): §6 screens against real APIs, styled per the chosen direction lifted into §5. **Blocked on Annette's pick.** **Exit:** build green; every screen usable at 390px and 1280px.
+- **Phase C — Opus 5** (UI): §6 screens against real APIs, styled per §5 Kanga. **Exit:** build green; every screen usable at 390px and 1280px in both themes.
 - **Phase D — Fable:** browser QA on phone and desktop widths, receipt-scan and quick-add accuracy pass against 20 real-looking inputs, fix, prod build, README final, report.
 
 Model ids for the lanes are set by the operator running each phase; nothing in the repo names them.
