@@ -30,6 +30,7 @@ Lineage: Simi's earlier apps. **Kindred** (Next.js + Prisma/SQLite + Auth.js Goo
 | 2026-09-14 | **Name: Harusi. Direction: Kanga.** (Round one: five names rejected, narrowed to Stationery vs Kanga. Round two: Stationery rebuilt in colour, ten new names; she chose Kanga and Harusi.) Full Kanga spec in DESIGN.md §5. | Annette |
 | 2026-09-14 | Simi's timezone: New York. | Simi |
 | 2026-09-14 | Build started: Phase A → B → C → D in sequence. | Simi |
+| 2026-09-14 | Phase A done. Deviations accepted: Prisma pinned to 6.x (7 removes `datasource.url` and needs driver adapters; revisit later); Next 16 renamed `middleware.ts` to `proxy.ts`; zod 4; icon script uses a generic bold sans, not Syne. | Fable |
 | 2026-09-14 | The Brief: nightly regenerated markdown for external AI sessions, with token URL and optional Drive sync. | Simi |
 | 2026-09-14 | Railway + SQLite on a volume. | default accepted |
 | 2026-09-14 | Lanes: Fable plans and QAs, Opus 5 writes logic and screens, Sonnet 5 writes plumbing. | Simi |
