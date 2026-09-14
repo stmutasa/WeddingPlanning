@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import useSWR from "swr";
 import { apiDelete, apiPatch, apiPost, fetcher } from "@/lib/api";
 import { useCatalog, useRefreshAll } from "@/lib/hooks";
@@ -39,8 +39,10 @@ const GLYPH: Record<RsvpStatus, string> = {
 
 export function GuestsScreen() {
   const [q, setQ] = useState("");
+  // As in Money: the fetch follows the typing rather than racing it.
+  const deferredQ = useDeferredValue(q);
   const { data, mutate } = useSWR<GuestDto[]>(
-    `/api/guests${q.trim() ? `?q=${encodeURIComponent(q.trim())}` : ""}`,
+    `/api/guests${deferredQ.trim() ? `?q=${encodeURIComponent(deferredQ.trim())}` : ""}`,
     fetcher,
   );
   const counts = useSWR<{ counts: GuestCountsDto; pendingHouseholds: string[] }>(

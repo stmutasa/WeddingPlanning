@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/api";
 import { useCatalog, useMe } from "@/lib/hooks";
@@ -23,6 +23,9 @@ export function ExpensesTab({
   const catalog = useCatalog();
   const { me } = useMe();
   const [q, setQ] = useState("");
+  // The query the list actually fetches lags the keystrokes, so typing does
+  // not fire a request per character.
+  const deferredQ = useDeferredValue(q);
   const [eventId, setEventId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [funderId, setFunderId] = useState("");
@@ -35,10 +38,10 @@ export function ExpensesTab({
     if (activeEventId) params.set("eventId", activeEventId);
     if (categoryId) params.set("categoryId", categoryId);
     if (funderId) params.set("funderId", funderId);
-    if (q.trim()) params.set("q", q.trim());
+    if (deferredQ.trim()) params.set("q", deferredQ.trim());
     const search = params.toString();
     return `/api/expenses${search ? `?${search}` : ""}`;
-  }, [activeEventId, categoryId, funderId, q]);
+  }, [activeEventId, categoryId, funderId, deferredQ]);
 
   const { data } = useSWR<ExpenseListDto>(query, fetcher);
 
