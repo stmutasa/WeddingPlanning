@@ -3,7 +3,7 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { apiPatch, apiPost, fetcher } from "@/lib/api";
-import { useCatalog, useMe, useRefreshAll } from "@/lib/hooks";
+import { useAiEnabled, useCatalog, useMe, useRefreshAll } from "@/lib/hooks";
 import { daysUntil, shortDate } from "@/lib/dates";
 import {
   isDisabled,
@@ -49,7 +49,8 @@ export function TasksTab() {
   const [draft, setDraft] = useState<TimelineDraftDto | null>(null);
   const [drafting, setDrafting] = useState(false);
   const [applying, setApplying] = useState(false);
-  const [aiOff, setAiOff] = useState(false);
+  const [aiFailed, setAiFailed] = useState(false);
+  const ai = useAiEnabled();
   const [error, setError] = useState<string | null>(null);
   const [justDone, setJustDone] = useState<string | null>(null);
   const [showDone, setShowDone] = useState(false);
@@ -101,7 +102,7 @@ export function TasksTab() {
         apply: false,
       });
       if (isDisabled(result)) {
-        setAiOff(true);
+        setAiFailed(true);
         return;
       }
       setDraft(result);
@@ -209,13 +210,13 @@ export function TasksTab() {
             <Button onClick={add} disabled={adding || !title.trim()}>
               {adding ? "Adding…" : "Add task"}
             </Button>
-            {!aiOff ? (
+            {!aiFailed && ai.enabled ? (
               <Button variant="secondary" onClick={generate} disabled={drafting}>
                 {drafting ? "Drafting…" : "Generate timeline"}
               </Button>
             ) : null}
           </div>
-          {aiOff ? (
+          {aiFailed || (ai.ready && !ai.enabled) ? (
             <p className="text-xs text-ink-soft">
               The assistant is off, so the timeline is yours to write.
             </p>

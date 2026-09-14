@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { clsx } from "@/lib/clsx";
 import type { Theme } from "@/lib/types";
 import { signOutAction } from "@/lib/actions/auth-actions";
@@ -29,6 +29,10 @@ export function TopBar({
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const pathname = usePathname();
+  // Home prints the wordmark at full size in the page itself, so the bar
+  // does not repeat it there.
+  const showWordmark = pathname !== "/";
 
   function cycleTheme() {
     const next = THEME_CYCLE[(THEME_CYCLE.indexOf(theme) + 1) % THEME_CYCLE.length];
@@ -44,9 +48,13 @@ export function TopBar({
 
   return (
     <header className="flex items-center justify-between border-b border-line px-4 py-3 md:px-6">
-      <Link href="/" className="wordmark text-lg text-ink md:hidden">
-        {appName}
-      </Link>
+      {showWordmark ? (
+        <Link href="/" className="wordmark text-lg text-ink md:hidden">
+          {appName}
+        </Link>
+      ) : (
+        <span />
+      )}
       <div className="hidden md:block" />
 
       <div className="relative">

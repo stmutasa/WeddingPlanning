@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { apiPost, apiPut, apiUpload } from "@/lib/api";
 import { downscaleImage, isPdf } from "@/lib/image";
+import { useAiEnabled } from "@/lib/hooks";
 import { isDisabled, type MaybeDisabled, type ReceiptDto, type VendorDto } from "@/lib/api-types";
 import type { ExpenseDraft } from "@/lib/expense-draft";
 import { Button, useToast } from "@/components/ui";
@@ -37,7 +38,9 @@ export function PhotoTab({
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [reading, setReading] = useState(false);
-  const [aiOff, setAiOff] = useState(false);
+  const [aiRefused, setAiRefused] = useState(false);
+  const ai = useAiEnabled();
+  const aiOff = aiRefused || (ai.ready && !ai.enabled);
   const [error, setError] = useState<string | null>(null);
   const [schedule, setSchedule] = useState<ReceiptDto["draft"]["schedule"]>([]);
   const [merchant, setMerchant] = useState<string | null>(null);
@@ -61,13 +64,15 @@ export function PhotoTab({
     }
     onFile(upload);
 
+    if (aiOff) return;
+
     setReading(true);
     try {
       const form = new FormData();
       form.append("file", upload);
       const result = await apiUpload<MaybeDisabled<ReceiptDto>>("/api/ai/receipt", form);
       if (isDisabled(result)) {
-        setAiOff(true);
+        setAiRefused(true);
         return;
       }
       const r = result.resolved;

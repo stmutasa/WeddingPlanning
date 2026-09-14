@@ -12,7 +12,7 @@ import {
   dollarsToCents,
   fetcher,
 } from "@/lib/api";
-import { useCatalog, useMe, useRefreshAll } from "@/lib/hooks";
+import { useAiEnabled, useCatalog, useMe, useRefreshAll } from "@/lib/hooks";
 import { dayInput, dueLabel } from "@/lib/dates";
 import { formatUSD } from "@/lib/money/format";
 import {
@@ -98,7 +98,8 @@ function VendorBody({
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<ContractSummaryDto | null>(null);
   const [reading, setReading] = useState<string | null>(null);
-  const [aiOff, setAiOff] = useState(false);
+  const [aiFailed, setAiFailed] = useState(false);
+  const ai = useAiEnabled();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [notes, setNotes] = useState(data.notes ?? "");
 
@@ -147,7 +148,7 @@ function VendorBody({
         save: true,
       });
       if (isDisabled(result)) {
-        setAiOff(true);
+        setAiFailed(true);
         return;
       }
       setSummary(result);
@@ -349,7 +350,7 @@ function VendorBody({
                   >
                     {attachment.kind.toLowerCase()} · {Math.round(attachment.bytes / 1024)} KB
                   </a>
-                  {!aiOff ? (
+                  {!aiFailed && ai.enabled ? (
                     <Button
                       size="sm"
                       variant="secondary"

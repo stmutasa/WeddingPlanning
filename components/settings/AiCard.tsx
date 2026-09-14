@@ -92,12 +92,14 @@ export function AiCard() {
     <Card>
       <div className="mb-2 flex items-start justify-between gap-3">
         <SectionLabel>AI</SectionLabel>
-        <Toggle
-          checked={appSettings.aiEnabled}
-          disabled={saving}
-          onChange={(checked) => patch({ aiEnabled: checked }, checked ? "AI on" : "AI off")}
-          label={appSettings.aiEnabled ? "On" : "Off"}
-        />
+        <span className="flex shrink-0 items-center gap-2">
+          <span className="text-xs text-ink-soft">{appSettings.aiEnabled ? "On" : "Off"}</span>
+          <Toggle
+            checked={appSettings.aiEnabled}
+            disabled={saving}
+            onChange={(checked) => patch({ aiEnabled: checked }, checked ? "AI on" : "AI off")}
+          />
+        </span>
       </div>
 
       {models.data?.problem ? (

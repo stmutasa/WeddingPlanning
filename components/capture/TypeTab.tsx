@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { apiPost } from "@/lib/api";
+import { useAiEnabled } from "@/lib/hooks";
 import { isDisabled, type QuickAddDto, type MaybeDisabled } from "@/lib/api-types";
 import type { ExpenseDraft } from "@/lib/expense-draft";
 import { Button, Skeleton, Textarea } from "@/components/ui";
@@ -31,7 +32,11 @@ export function TypeTab({
 }) {
   const [text, setText] = useState("");
   const [parsing, setParsing] = useState(false);
-  const [aiOff, setAiOff] = useState(false);
+  const [aiRefused, setAiRefused] = useState(false);
+  const ai = useAiEnabled();
+  // Known up front on a keyless server; also set if a call comes back
+  // `disabled` (README: the AI routes answer that with a 200).
+  const aiOff = aiRefused || (ai.ready && !ai.enabled);
   const [error, setError] = useState<string | null>(null);
   const [parsed, setParsed] = useState(false);
   const [needsRate, setNeedsRate] = useState(false);
@@ -48,7 +53,7 @@ export function TypeTab({
         text: value,
       });
       if (isDisabled(result)) {
-        setAiOff(true);
+        setAiRefused(true);
         onChange({ description: value });
         return;
       }
@@ -75,10 +80,7 @@ export function TypeTab({
 
   // Debounced 400ms, from three words up (PROMPTS.md §1).
   useEffect(() => {
-    if (aiOff) {
-      onChange({ description: text });
-      return;
-    }
+    if (aiOff) return;
     const words = text.trim().split(/\s+/).filter(Boolean);
     if (words.length < 3 || text === lastParsed.current) return;
     const timer = setTimeout(() => void parse(text), 400);
@@ -96,24 +98,25 @@ export function TypeTab({
 
   return (
     <div className="flex flex-col gap-3">
-      <Textarea
-        label={aiOff ? "Description" : "What happened?"}
-        rows={2}
-        autoFocus
-        placeholder={aiOff ? "Florist deposit" : "paid florist 800 deposit ruracio"}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
-
       {aiOff ? (
         <Banner tone="info">
-          The assistant is off, so this is a plain form — fill it in below and save.
+          The assistant is off, so this is the plain form — the same fields, filled in by hand.
         </Banner>
       ) : (
-        <p className="text-xs text-ink-soft">
-          Type it the way you would say it. Amount, event, vendor and who paid are read back as
-          chips you can change.
-        </p>
+        <>
+          <Textarea
+            label="What happened?"
+            rows={2}
+            autoFocus
+            placeholder="paid florist 800 deposit ruracio"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <p className="text-xs text-ink-soft">
+            Type it the way you would say it. Amount, event, vendor and who paid are read back as
+            chips you can change.
+          </p>
+        </>
       )}
 
       {error ? <Banner tone="warn">{error}</Banner> : null}

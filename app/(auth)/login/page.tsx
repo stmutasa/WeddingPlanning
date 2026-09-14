@@ -1,5 +1,6 @@
 import { signInGoogleAction } from "@/lib/actions/auth-actions";
-import { Button, JINA_LIST, KangaBand } from "@/components/ui";
+import { Button, KangaBand } from "@/components/ui";
+import { MOTTO } from "@/lib/jina";
 import { DevLoginButton } from "@/components/auth/DevLoginButton";
 
 const appName = process.env.APP_NAME ?? "Harusi";
@@ -13,7 +14,6 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const params = await searchParams;
   const hasError = Boolean(params?.error);
   const devEmail = process.env.NODE_ENV !== "production" ? process.env.DEV_LOGIN_EMAIL : undefined;
-  const motto = JINA_LIST[0];
 
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-6 text-center">
@@ -21,8 +21,8 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
       <div className="flex flex-col items-center gap-3">
         <p className="wordmark text-[56px] leading-none text-ink">{appName}</p>
-        <p className="jina-text">{motto.swahili}</p>
-        <p className="text-xs text-ink-soft">{motto.translation}</p>
+        <p className="jina-text">{MOTTO.swahili}</p>
+        <p className="text-xs text-ink-soft">{MOTTO.translation}</p>
       </div>
 
       <p className="text-sm text-ink-soft">Annette &amp; Simi · Nairobi · August 2027</p>

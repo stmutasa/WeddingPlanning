@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import useSWR from "swr";
 import { apiPost, fetcher } from "@/lib/api";
-import { useRefreshAll } from "@/lib/hooks";
+import { useAiEnabled, useRefreshAll } from "@/lib/hooks";
 import { relativeShort } from "@/lib/dates";
 import type { ChatMessageDto, ChatThreadDto } from "@/lib/api-types";
 import {
@@ -44,17 +44,25 @@ export function AskScreen() {
     fetcher,
   );
   const refreshAll = useRefreshAll();
+  const ai = useAiEnabled();
 
   const [input, setInput] = useState("");
   const [streamingText, setStreamingText] = useState("");
   const [pendingUser, setPendingUser] = useState<string | null>(null);
   const [toolCards, setToolCards] = useState<ToolCard[]>([]);
   const [sending, setSending] = useState(false);
-  const [aiOff, setAiOff] = useState<string | null>(null);
+  const [aiOffFromRoute, setAiOff] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef<ReturnType<typeof speechRecognition>>(null);
-  const [micAvailable] = useState(() => Boolean(speechRecognition()));
+  // The server cannot know whether this browser has speech recognition, so
+  // the mic is decided after hydration rather than during it — otherwise
+  // the first client render disagrees with the HTML React was given.
+  const micAvailable = useSyncExternalStore(
+    subscribeNever,
+    () => Boolean(speechRecognition()),
+    () => false
+  );
 
   async function send(text: string) {
     const message = text.trim();
@@ -171,6 +179,9 @@ export function AskScreen() {
     setThreadId(thread.id);
   }
 
+  // Known before the first send when the models route says so; otherwise
+  // the route's plain-JSON `disabled` answer tells us on the first try.
+  const aiOff = aiOffFromRoute ?? (ai.ready && !ai.enabled ? ai.reason : null);
   const history = messages.data ?? [];
 
   return (
@@ -347,4 +358,9 @@ function parseToolCalls(raw: string | null): { name: string; result: string }[] 
   } catch {
     return [];
   }
+}
+
+/** No store to subscribe to: mic support does not change while the page is open. */
+function subscribeNever(): () => void {
+  return () => {};
 }

@@ -1,4 +1,6 @@
-import type { InputHTMLAttributes } from "react";
+"use client";
+
+import { useId, type InputHTMLAttributes } from "react";
 import { clsx } from "@/lib/clsx";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -7,7 +9,10 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export function Input({ label, error, id, className, ...rest }: InputProps) {
-  const inputId = id ?? rest.name;
+  // A label has to point at a real id, so one is generated when the
+  // caller gives neither an id nor a name (accessibility, DESIGN.md §5.7).
+  const generatedId = useId();
+  const inputId = id ?? rest.name ?? generatedId;
   return (
     <div className="flex flex-col gap-1">
       {label ? (

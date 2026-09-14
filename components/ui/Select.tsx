@@ -1,4 +1,6 @@
-import type { SelectHTMLAttributes } from "react";
+"use client";
+
+import { useId, type SelectHTMLAttributes } from "react";
 import { clsx } from "@/lib/clsx";
 
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
@@ -7,7 +9,10 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 export function Select({ label, error, id, className, children, ...rest }: SelectProps) {
-  const selectId = id ?? rest.name;
+  // A label has to point at a real id, so one is generated when the
+  // caller gives neither an id nor a name (accessibility, DESIGN.md §5.7).
+  const generatedId = useId();
+  const selectId = id ?? rest.name ?? generatedId;
   return (
     <div className="flex flex-col gap-1">
       {label ? (

@@ -4,6 +4,7 @@ import useSWR, { useSWRConfig } from "swr";
 import { useCallback } from "react";
 import { fetcher } from "./api";
 import type {
+  AiModelsDto,
   AppSettingsDto,
   CategoryDto,
   EventDto,
@@ -56,6 +57,22 @@ export function useAppSettings() {
  * activity feed, the settle-up and the event rows, so screens ask for a
  * blanket refresh rather than naming each key.
  */
+/**
+ * Whether the assistant can actually answer right now: switched on in
+ * Settings and with a usable model on one of the two providers. Screens ask
+ * this before offering an AI affordance, so a keyless server shows the
+ * manual path from the first paint rather than after a failed call.
+ */
+export function useAiEnabled(): { ready: boolean; enabled: boolean; reason: string | null } {
+  const { data } = useSWR<AiModelsDto>("/api/ai/models", fetcher);
+  if (!data) return { ready: false, enabled: false, reason: null };
+  if (!data.enabled) return { ready: true, enabled: false, reason: "The assistant is switched off in Settings." };
+  if (!data.primary && !data.backup) {
+    return { ready: true, enabled: false, reason: "No AI provider key is configured on this server." };
+  }
+  return { ready: true, enabled: true, reason: null };
+}
+
 export function useRefreshAll() {
   const { mutate } = useSWRConfig();
   return useCallback(() => {

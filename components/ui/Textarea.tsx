@@ -1,4 +1,6 @@
-import type { TextareaHTMLAttributes } from "react";
+"use client";
+
+import { useId, type TextareaHTMLAttributes } from "react";
 import { clsx } from "@/lib/clsx";
 
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -7,7 +9,10 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
 }
 
 export function Textarea({ label, error, id, className, ...rest }: TextareaProps) {
-  const areaId = id ?? rest.name;
+  // A label has to point at a real id, so one is generated when the
+  // caller gives neither an id nor a name (accessibility, DESIGN.md §5.7).
+  const generatedId = useId();
+  const areaId = id ?? rest.name ?? generatedId;
   return (
     <div className="flex flex-col gap-1">
       {label ? (

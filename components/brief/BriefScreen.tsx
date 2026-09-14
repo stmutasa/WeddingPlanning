@@ -4,8 +4,9 @@ import { useState } from "react";
 import useSWR from "swr";
 import { ApiError, apiPost, fetcher } from "@/lib/api";
 import { useMe } from "@/lib/hooks";
+import { formatUSD } from "@/lib/money/format";
 import { longDate, relativeShort } from "@/lib/dates";
-import type { BriefDto } from "@/lib/api-types";
+import type { BriefDto, BudgetSummaryDto } from "@/lib/api-types";
 import {
   Button,
   Card,
@@ -13,10 +14,11 @@ import {
   PageHeader,
   SectionLabel,
   Skeleton,
+  StackedBar,
   Toggle,
   useToast,
 } from "@/components/ui";
-import { Banner, ConfirmDialog } from "@/components/common";
+import { Banner, ConfirmDialog, ForecastPill } from "@/components/common";
 import { Markdown } from "./Markdown";
 
 /**
@@ -25,6 +27,7 @@ import { Markdown } from "./Markdown";
  */
 export function BriefScreen() {
   const { data, error: loadError, mutate } = useSWR<BriefDto>("/api/brief", fetcher);
+  const summary = useSWR<BudgetSummaryDto>("/api/budget/summary", fetcher);
   const { me } = useMe();
   const { toast } = useToast();
   const [busy, setBusy] = useState<string | null>(null);
@@ -109,6 +112,25 @@ export function BriefScreen() {
             : "The daily document"
         }
       />
+
+      {summary.data ? (
+        <Card>
+          <div className="mb-2 flex items-baseline justify-between gap-3">
+            <SectionLabel>At a glance</SectionLabel>
+            <ForecastPill status={summary.data.status} />
+          </div>
+          <StackedBar
+            paidCents={summary.data.paidCents}
+            committedCents={summary.data.committedCents}
+            totalCents={summary.data.totalCents}
+          />
+          <p className="mt-2 text-[13px] text-ink-soft">
+            {formatUSD(summary.data.paidCents)} paid · {formatUSD(summary.data.committedCents)}{" "}
+            committed · {formatUSD(summary.data.remainingCents)} of{" "}
+            {formatUSD(summary.data.totalCents)} left
+          </p>
+        </Card>
+      ) : null}
 
       <Card>
         <SectionLabel>How to use it</SectionLabel>

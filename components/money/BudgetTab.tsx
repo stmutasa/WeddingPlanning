@@ -3,7 +3,7 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { apiPost, apiPut, centsToInput, dollarsToCents, fetcher } from "@/lib/api";
-import { useCatalog, useRefreshAll } from "@/lib/hooks";
+import { useAiEnabled, useCatalog, useRefreshAll } from "@/lib/hooks";
 import { formatUSD } from "@/lib/money/format";
 import {
   isDisabled,
@@ -40,7 +40,8 @@ export function BudgetTab() {
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState<BudgetDraftDto | null>(null);
   const [drafting, setDrafting] = useState(false);
-  const [aiOff, setAiOff] = useState(false);
+  const [aiFailed, setAiFailed] = useState(false);
+  const ai = useAiEnabled();
   const [linesFor, setLinesFor] = useState<string | null>(null);
 
   if (!summary) return <CardSkeleton />;
@@ -82,7 +83,7 @@ export function BudgetTab() {
     try {
       const result = await apiPost<MaybeDisabled<BudgetDraftDto>>("/api/ai/budget-draft");
       if (isDisabled(result)) {
-        setAiOff(true);
+        setAiFailed(true);
         return;
       }
       setDraft(result);
@@ -216,7 +217,7 @@ export function BudgetTab() {
           <Button className="flex-1" onClick={saveEnvelopes} disabled={saving}>
             {saving ? "Saving…" : "Save envelopes"}
           </Button>
-          {!aiOff ? (
+          {!aiFailed && ai.enabled ? (
             <Button
               variant="secondary"
               className="flex-1"
@@ -227,7 +228,7 @@ export function BudgetTab() {
             </Button>
           ) : null}
         </div>
-        {aiOff ? (
+        {aiFailed || (ai.ready && !ai.enabled) ? (
           <p className="mt-2 text-xs text-ink-soft">
             The assistant is off, so the envelopes are yours to set by hand.
           </p>

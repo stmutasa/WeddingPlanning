@@ -15,10 +15,10 @@ Nairobi, August 2027.
 
 ## Status
 
-Phase 0 (planning), Phase A (scaffold, schema, auth, CRUD routes, design system, PWA shell)
-and Phase B (service layer, AI engine, Plaid + CSV import, forecast and settle-up, the
-Brief, scheduler jobs, push and digest, export, smoke test) are done. Phase C (the screens)
-is next.
+Phase 0 (planning), Phase A (scaffold, schema, auth, CRUD routes, design system, PWA
+shell), Phase B (service layer, AI engine, Plaid + CSV import, forecast and settle-up, the
+Brief, scheduler jobs, push and digest, export, smoke test) and Phase C (every screen,
+wired to the real API) are done. Phase D (QA) is next.
 
 ## Stack
 
@@ -89,6 +89,36 @@ default. Components reference the generated utilities (`bg-bg`, `text-ink`, `bor
 UI primitives are in `components/ui/` (barrel: `components/ui/index.ts`); shell chrome
 (top bar, bottom tab bar, desktop side rail, the capture sheet) is in `components/shell/`
 and `components/capture/`.
+
+## Screens
+
+Every screen is in `app/(app)/`, thin: a server component that reads the session and hands
+off to a client component under `components/`. Data comes from the API through `lib/api.ts`
+and `swr` (`lib/hooks.ts`); nothing in `components/` imports a service or Prisma. Screenshots
+of all of them, phone and desktop in both themes, are in [`docs/screenshots/`](./docs/screenshots).
+
+| Screen | What is on it |
+|---|---|
+| `/login` | Wordmark, the motto proverb, one line about the wedding, Continue with Google, and the dev sign-in button outside production. A non-allowlisted account is told the app is just for the two of them. |
+| `/` Home | Countdown to the month (or the date once set), the inbox chip, the dismissable weekly digest, the indigo budget card with marigold progress and hatched committed money, event rows with mini-bars and status pills, the next 14 days of payments with "Mark paid", recent expenses, and the activity feed under a kanga band. |
+| ＋ capture | A sheet from every screen with three tabs: **Type** (quick-add parsing, chips you can edit, a rate prompt when FX is unavailable), **Photo** (camera or file, downscaled to 1600px JPEG with EXIF baked in, a prefilled form, "Create vendor + payment schedule" for a quote with instalments), **Form** (the full manual entry, with an attachment). |
+| `/money` | Tabs: **Expenses** (filters, totals, search, detail/edit sheet with attachments), **Budget** (envelope editor with the sum warning, planned lines per category, "Draft with AI" reviewed as a diff), **Vendors** (cards, detail with tap-to-call/WhatsApp/email, the schedule editor, attachments, "Summarise contract" → "Apply schedule"), **Payments** (overdue in `danger`, "Mark paid"), **Inbox** (AI guesses, Confirm/Edit/Not wedding, Connect bank, Import CSV with a column-mapping step), **Settle up** (fronted totals, who owes whom, history, "Mark settled"). |
+| `/plan` | Tabs: **Tasks** (Overdue/Today/Upcoming/Someday, quick add, assignee hue, `check-pop` on completing, "Generate timeline" reviewed before it is applied), **Timeline** (a month strip from now to the wedding month with milestones and dues), **Notes** (kind chips, pinned first). |
+| `/guests` | Grouped by household, side and per-event RSVP chips that cycle on tap, a counts header, search, add/edit sheet, CSV import. |
+| `/ask` | Shared threads, streaming answers over the documented SSE, tool calls as compact cards, suggested prompts, and a mic where the browser has speech recognition. |
+| `/brief` | The latest Brief rendered, Copy markdown, Download .md, Regenerate now, the token URL with Copy link and Rotate token, and the Drive toggle when that flag is on. |
+| `/settings` | Profile (name, hue with the red warning, timezone, theme), AI (model lists by provider, the resolved primary, override, effort, tone, usage), Bank, Wedding, Notifications, Data exports. |
+| `/vendors` | The More menu's entry; renders the same component as Money › Vendors. |
+
+Every AI affordance hides itself when no provider key is configured or the assistant is
+switched off in Settings, and the manual path behind it keeps working.
+
+## Install it on a phone
+
+- **iPhone (Safari, iOS 16.4+):** open the deployed URL, tap **Share → Add to Home Screen**,
+  then open the app from that icon. Notifications only work from the installed app.
+- **Android (Chrome):** open the URL, then **⋮ → Install app** (or "Add to Home screen").
+  Push also works from a normal tab, but installing gives the full-screen app.
 
 ## API catalog
 
@@ -195,6 +225,8 @@ primary and the backup model failed. The manual path always works without them.
 | `/api/chat/threads` | POST | `{ title? }` | `ChatThread` |
 | `/api/chat/threads/[id]/messages` | GET | — | `ChatMessage[]` |
 | `/api/activity?n=` | GET | — | `Activity[]` (default 25, max 200) |
+| `/api/people` | GET | — | `[{ userId, funderId, name, email, hue }]` — both users, for attribution colours (Phase C) |
+| `/api/digest` | GET | — | `{ digest }` — the latest `DIGEST` note, already parsed, for the Home card (Phase C) |
 | `/api/export` | GET | — | JSON dump of the whole DB (secrets excluded) |
 | `/api/export/expenses.csv` | GET | — | `text/csv` — every expense, cents and dollars both |
 | `/api/push/vapid` | GET | — | `{ publicKey, configured }` |
