@@ -1,24 +1,22 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import useSWR from "swr";
-import { Sheet, Tabs, Input, Select, Textarea, Button, useToast } from "@/components/ui";
+import { useMemo, useState } from "react";
+import { apiPost, apiUpload } from "@/lib/api";
+import { useCatalog, useRefreshAll } from "@/lib/hooks";
+import { emptyDraft, draftProblem, toBody, type ExpenseDraft } from "@/lib/expense-draft";
+import { formatUSD } from "@/lib/money/format";
+import type { ExpenseDto } from "@/lib/api-types";
+import { Button, Sheet, Tabs, useToast } from "@/components/ui";
+import { Banner } from "@/components/common";
+import { ExpenseFields } from "./ExpenseFields";
+import { TypeTab } from "./TypeTab";
+import { PhotoTab } from "./PhotoTab";
 
-interface EventOption {
-  id: string;
-  name: string;
-}
-interface CategoryOption {
-  id: string;
-  name: string;
-}
-interface FunderOption {
-  id: string;
-  name: string;
-}
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
+/**
+ * The ＋ sheet, reachable from every screen (DESIGN.md §6). Three tabs over
+ * one draft: type it, photograph it, or fill the form. After a save the
+ * toast reads "Saved · Wedding · $1,200 · Simi".
+ */
 export function CaptureSheet({
   open,
   onClose,
@@ -28,50 +26,70 @@ export function CaptureSheet({
   onClose: () => void;
   defaultFunderId: string | null;
 }) {
-  const [tab, setTab] = useState("form");
-  const { data: events } = useSWR<EventOption[]>(open ? "/api/events" : null, fetcher);
-  const { data: categories } = useSWR<CategoryOption[]>(open ? "/api/categories" : null, fetcher);
-  const { data: funders } = useSWR<FunderOption[]>(open ? "/api/funders" : null, fetcher);
+  const [tab, setTab] = useState("type");
+  const [draft, setDraft] = useState<ExpenseDraft>(() =>
+    emptyDraft({ funderId: defaultFunderId ?? "" }),
+  );
+  const [file, setFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const catalog = useCatalog();
   const { toast } = useToast();
-  const [submitting, setSubmitting] = useState(false);
+  const refreshAll = useRefreshAll();
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setSubmitting(true);
-    const form = new FormData(e.currentTarget);
-    const dollars = parseFloat(String(form.get("amount") ?? "0"));
-    const body = {
-      description: String(form.get("description") ?? ""),
-      amountCents: Math.round((Number.isFinite(dollars) ? dollars : 0) * 100),
-      date: String(form.get("date") ?? new Date().toISOString().slice(0, 10)),
-      eventId: String(form.get("eventId") ?? ""),
-      categoryId: form.get("categoryId") ? String(form.get("categoryId")) : null,
-      funderId: String(form.get("funderId") ?? ""),
-      notes: form.get("notes") ? String(form.get("notes")) : null,
-      source: "MANUAL",
-    };
+  // A fresh draft per opening comes from the key AppShell gives this
+  // component, not from an effect that re-syncs state after the fact.
+  const bundle = useMemo(
+    () => ({
+      events: catalog.events,
+      categories: catalog.categories,
+      funders: catalog.funders,
+      vendors: catalog.vendors,
+      people: catalog.people,
+    }),
+    [catalog.events, catalog.categories, catalog.funders, catalog.vendors, catalog.people],
+  );
 
+  function patch(next: Partial<ExpenseDraft>) {
+    setDraft((prev) => ({ ...prev, ...next }));
+  }
+
+  async function save(source: string) {
+    const problem = draftProblem(draft);
+    if (problem) {
+      setError(problem);
+      return;
+    }
+    setSaving(true);
+    setError(null);
     try {
-      const res = await fetch("/api/expenses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) {
-        const { error } = await res.json().catch(() => ({ error: "Could not save" }));
-        toast(error ?? "Could not save");
-        return;
+      const expense = await apiPost<ExpenseDto>("/api/expenses", toBody(draft, source));
+      if (file) {
+        const form = new FormData();
+        form.append("file", file);
+        form.append("kind", "RECEIPT");
+        await apiUpload(`/api/expenses/${expense.id}/attachments`, form);
       }
-      toast(`Saved · $${dollars.toFixed(2)}`);
-      e.currentTarget.reset();
+      const funder = catalog.funders.find((f) => f.id === expense.funderId);
+      toast(
+        `Saved · ${expense.event?.name ?? ""} · ${formatUSD(expense.amountCents)} · ${funder?.name ?? ""}`,
+      );
+      refreshAll();
       onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save that");
     } finally {
-      setSubmitting(false);
+      setSaving(false);
     }
   }
 
   return (
-    <Sheet open={open} onClose={onClose} title="Add">
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="Add an expense"
+      className="max-h-[92vh] overflow-y-auto"
+    >
       <Tabs
         value={tab}
         onChange={setTab}
@@ -83,74 +101,66 @@ export function CaptureSheet({
         className="mb-4"
       />
 
-      {tab === "type" ? (
-        <ComingSoon text="Type it and let the assistant parse the amount, event and vendor — coming in the next phase." />
+      {error ? (
+        <Banner tone="danger" className="mb-3">
+          {error}
+        </Banner>
       ) : null}
+
+      {tab === "type" ? (
+        <TypeTab draft={draft} onChange={patch} catalog={bundle} onSave={save} saving={saving} />
+      ) : null}
+
       {tab === "photo" ? (
-        <ComingSoon text="Photograph a receipt and have it read automatically — coming in the next phase." />
+        <PhotoTab
+          draft={draft}
+          onChange={patch}
+          catalog={bundle}
+          onSave={save}
+          saving={saving}
+          onFile={setFile}
+        />
       ) : null}
 
       {tab === "form" ? (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <Input name="description" label="Description" required placeholder="Florist deposit" />
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              name="amount"
-              label="Amount (USD)"
-              type="number"
-              step="0.01"
-              min="0"
-              required
-              placeholder="0.00"
-            />
-            <Input
-              name="date"
-              label="Date"
-              type="date"
-              defaultValue={new Date().toISOString().slice(0, 10)}
-              required
-            />
-          </div>
-          <Select name="eventId" label="Event" required defaultValue="">
-            <option value="" disabled>
-              Choose an event
-            </option>
-            {(events ?? []).map((ev) => (
-              <option key={ev.id} value={ev.id}>
-                {ev.name}
-              </option>
-            ))}
-          </Select>
-          <Select name="categoryId" label="Category" defaultValue="">
-            <option value="">No category</option>
-            {(categories ?? []).map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </Select>
-          <Select name="funderId" label="Paid by" required defaultValue={defaultFunderId ?? ""}>
-            <option value="" disabled>
-              Choose who paid
-            </option>
-            {(funders ?? []).map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.name}
-              </option>
-            ))}
-          </Select>
-          <Textarea name="notes" label="Notes (optional)" rows={2} />
-          <Button type="submit" disabled={submitting} className="mt-1">
-            {submitting ? "Saving…" : "Save"}
+        <div className="flex flex-col gap-3">
+          <ExpenseFields
+            draft={draft}
+            onChange={patch}
+            events={catalog.events}
+            categories={catalog.categories}
+            funders={catalog.funders}
+            vendors={catalog.vendors}
+          />
+          <AttachmentPicker onFile={setFile} file={file} />
+          <Button onClick={() => save("MANUAL")} disabled={saving}>
+            {saving ? "Saving…" : "Save"}
           </Button>
-        </form>
+        </div>
       ) : null}
     </Sheet>
   );
 }
 
-function ComingSoon({ text }: { text: string }) {
+function AttachmentPicker({
+  file,
+  onFile,
+}: {
+  file: File | null;
+  onFile: (file: File | null) => void;
+}) {
   return (
-    <p className="rounded-lg bg-sunken px-4 py-6 text-center text-sm text-ink-soft">{text}</p>
+    <label className="flex flex-col gap-1">
+      <span className="label-tracked">Attachment (optional)</span>
+      <input
+        type="file"
+        accept="image/*,application/pdf"
+        onChange={(e) => onFile(e.target.files?.[0] ?? null)}
+        className="focus-ring min-h-11 rounded-lg bg-sunken px-3 py-2 text-sm text-ink file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-2 file:text-xs file:font-bold file:uppercase file:tracking-wide file:text-on-primary"
+      />
+      {file ? (
+        <span className="text-xs text-ink-soft">{file.name} attaches after saving.</span>
+      ) : null}
+    </label>
   );
 }

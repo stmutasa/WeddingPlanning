@@ -1,15 +1,20 @@
-import { PageHeader, EmptyState } from "@/components/ui";
+import { Suspense } from "react";
+import { auth } from "@/auth";
+import { db } from "@/lib/db";
+import { MoneyScreen } from "@/components/money/MoneyScreen";
+import AppLoading from "../loading";
 
-// TODO(phase-c): Money screen tabs — Expenses / Budget / Vendors / Payments /
-// Inbox / Settle up (DESIGN.md §6). Phase A ships the CRUD routes only.
-export default function MoneyPage() {
+export default async function MoneyPage() {
+  const session = await auth();
+  const funder = session?.user?.id
+    ? await db.funder.findUnique({ where: { userId: session.user.id } })
+    : null;
+
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader title="Money" subtitle="Expenses · Budget · Payments · Inbox" />
-      <EmptyState
-        title="Money screens come in Phase C"
-        description="Expenses, the budget editor, vendor payment schedules, the transaction inbox and settle-up will render here."
-      />
-    </div>
+    // useSearchParams needs a Suspense boundary above it (Next docs:
+    // functions/use-search-params).
+    <Suspense fallback={<AppLoading />}>
+      <MoneyScreen defaultFunderId={funder?.id ?? null} />
+    </Suspense>
   );
 }

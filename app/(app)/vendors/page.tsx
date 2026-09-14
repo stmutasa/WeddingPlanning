@@ -1,15 +1,12 @@
-import { PageHeader, EmptyState } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
+import { VendorsTab } from "@/components/vendors/VendorsTab";
 
-// TODO(phase-c): Vendors screen — status cards, contact tap-to-call/WhatsApp,
-// payment schedule editor, attachments, contract summary (DESIGN.md §6).
+/** The More-menu entry; the same component Money › Vendors renders. */
 export default function VendorsPage() {
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader title="Vendors" subtitle="Status · Payments · Contacts" />
-      <EmptyState
-        title="Vendors screen comes in Phase C"
-        description="Vendor cards, payment schedules and contract summaries will render here."
-      />
+    <div className="flex flex-col gap-4">
+      <PageHeader title="Vendors" subtitle="Quotes, contacts and payment schedules" />
+      <VendorsTab />
     </div>
   );
 }
