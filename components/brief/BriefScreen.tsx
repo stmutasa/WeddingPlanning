@@ -106,11 +106,7 @@ export function BriefScreen() {
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Brief"
-        subtitle={
-          data
-            ? `${data.words} words · ${relativeShort(data.generatedAt)} old`
-            : "The daily document"
-        }
+        subtitle={data ? `${data.words} words · ${age(data.generatedAt)}` : "The daily document"}
       />
 
       {summary.data ? (
@@ -234,4 +230,10 @@ export function BriefScreen() {
       />
     </div>
   );
+}
+
+/** "regenerated just now", "3h old" — the Brief's freshness, in words. */
+function age(generatedAt: string): string {
+  const relative = relativeShort(generatedAt);
+  return relative === "just now" ? "regenerated just now" : `${relative} old`;
 }
