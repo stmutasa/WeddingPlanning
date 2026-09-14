@@ -154,6 +154,9 @@ primary and the backup model failed. The manual path always works without them.
 | `/api/expenses/[id]` | DELETE | — | `{ ok: true }` |
 | `/api/expenses/[id]/attachments` | POST | multipart: `file`, `kind?` | `Attachment` |
 | `/api/attachments/[id]` | GET | — | file bytes (`Content-Type` from the stored mime) |
+| `/api/attachments/[id]` | DELETE | — | `{ ok: true }` |
+| `/api/vendors/[id]/attachments` | GET | — | `Attachment[]` |
+| `/api/vendors/[id]/attachments` | POST | multipart: `file`, `kind?` (default `CONTRACT`) | `Attachment` — feed its id to `/api/ai/contract` |
 | `/api/contributions?funderId=` | GET | — | `Contribution[]` |
 | `/api/contributions` | POST | `{ funderId, amountCents, date, note? }` | `Contribution` |
 | `/api/contributions/[id]` | DELETE | — | `{ ok: true }` |

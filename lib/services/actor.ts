@@ -12,7 +12,8 @@ import { formatUSD } from "@/lib/money/format";
 const nameCache = new Map<string, string>();
 
 export async function actorName(userId: string | null | undefined): Promise<string> {
-  if (!userId) return "Harusi";
+  // A job, not a person: the app itself is the actor, named from APP_NAME.
+  if (!userId) return process.env.APP_NAME?.trim() || "the app";
   const cached = nameCache.get(userId);
   if (cached) return cached;
 
