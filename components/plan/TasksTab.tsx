@@ -5,8 +5,22 @@ import useSWR from "swr";
 import { apiPatch, apiPost, fetcher } from "@/lib/api";
 import { useCatalog, useMe, useRefreshAll } from "@/lib/hooks";
 import { daysUntil, shortDate } from "@/lib/dates";
-import { isDisabled, type MaybeDisabled, type TaskDto, type TimelineDraftDto } from "@/lib/api-types";
-import { Button, Card, EmptyState, Input, SectionLabel, Select, Sheet, useToast } from "@/components/ui";
+import {
+  isDisabled,
+  type MaybeDisabled,
+  type TaskDto,
+  type TimelineDraftDto,
+} from "@/lib/api-types";
+import {
+  Button,
+  Card,
+  EmptyState,
+  Input,
+  SectionLabel,
+  Select,
+  Sheet,
+  useToast,
+} from "@/components/ui";
 import {
   Banner,
   EventChip,
@@ -114,7 +128,7 @@ export function TasksTab() {
         if (existing.has(task.title.trim().toLowerCase())) continue;
         const event = catalog.events.find((e) => e.slug === task.eventSlug);
         const assignee = catalog.people.find(
-          (p) => p.name.toLowerCase() === (task.suggestedAssignee ?? "").toLowerCase()
+          (p) => p.name.toLowerCase() === (task.suggestedAssignee ?? "").toLowerCase(),
         );
         await apiPost("/api/tasks", {
           title: task.title,
@@ -172,7 +186,12 @@ export function TasksTab() {
                 </option>
               ))}
             </Select>
-            <Input label="Due" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+            <Input
+              label="Due"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+            />
             <Select
               label="Assignee"
               value={assigneeId}
@@ -208,7 +227,7 @@ export function TasksTab() {
 
       {!data ? (
         <RowsSkeleton rows={5} title />
-      ) : (data.length === 0 ? (
+      ) : data.length === 0 ? (
         <EmptyState
           title="No open tasks"
           description="Add one above, or let the assistant draft the Kenyan wedding sequence from the date."
@@ -261,7 +280,7 @@ export function TasksTab() {
               </ul>
             </Card>
           ))
-      ))}
+      )}
 
       <Card>
         <button
@@ -305,7 +324,10 @@ export function TasksTab() {
             </p>
             <ul className="flex flex-col gap-1 text-sm">
               {draft.drafted.map((task, i) => (
-                <li key={i} className="flex justify-between gap-3 border-t border-line pt-1 first:border-t-0">
+                <li
+                  key={i}
+                  className="flex justify-between gap-3 border-t border-line pt-1 first:border-t-0"
+                >
                   <span className="text-ink">{task.title}</span>
                   <span className="shrink-0 text-xs text-ink-soft">
                     {task.dueDate}

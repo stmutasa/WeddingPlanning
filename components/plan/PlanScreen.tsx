@@ -26,7 +26,7 @@ export function PlanScreen() {
       search.set("tab", next);
       router.replace(`${pathname}?${search.toString()}`, { scroll: false });
     },
-    [params, pathname, router]
+    [params, pathname, router],
   );
 
   return (

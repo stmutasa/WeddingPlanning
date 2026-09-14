@@ -6,7 +6,15 @@ import { apiPost, fetcher } from "@/lib/api";
 import { useRefreshAll } from "@/lib/hooks";
 import { relativeShort } from "@/lib/dates";
 import type { ChatMessageDto, ChatThreadDto } from "@/lib/api-types";
-import { Button, Card, EmptyState, PageHeader, SectionLabel, Skeleton, Textarea } from "@/components/ui";
+import {
+  Button,
+  Card,
+  EmptyState,
+  PageHeader,
+  SectionLabel,
+  Skeleton,
+  Textarea,
+} from "@/components/ui";
 import { Banner, NeutralBadge } from "@/components/common";
 import { speechRecognition } from "./speech";
 
@@ -33,7 +41,7 @@ export function AskScreen() {
   const [threadId, setThreadId] = useState<string | null>(null);
   const messages = useSWR<ChatMessageDto[]>(
     threadId ? `/api/chat/threads/${threadId}/messages` : null,
-    fetcher
+    fetcher,
   );
   const refreshAll = useRefreshAll();
 
@@ -107,7 +115,11 @@ export function AskScreen() {
           } else if (event === "tool_call") {
             setToolCards((prev) => [
               ...prev,
-              { id: data.id ?? String(prev.length), name: data.name ?? "tool", result: data.result ?? "" },
+              {
+                id: data.id ?? String(prev.length),
+                name: data.name ?? "tool",
+                result: data.result ?? "",
+              },
             ]);
           } else if (event === "error") {
             setError(data.error ?? "The assistant stopped early");

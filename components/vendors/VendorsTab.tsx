@@ -9,7 +9,18 @@ import { formatUSD } from "@/lib/money/format";
 import type { VendorStatus } from "@/lib/types";
 import { VENDOR_STATUSES } from "@/lib/types";
 import type { VendorWithMoneyDto } from "@/lib/api-types";
-import { Button, Card, EmptyState, Input, SectionLabel, Select, Sheet, StatusPill, Tabs, useToast } from "@/components/ui";
+import {
+  Button,
+  Card,
+  EmptyState,
+  Input,
+  SectionLabel,
+  Select,
+  Sheet,
+  StatusPill,
+  Tabs,
+  useToast,
+} from "@/components/ui";
 import { EventChip, NeutralBadge, RowsSkeleton } from "@/components/common";
 import { VendorSheet } from "./VendorSheet";
 
@@ -55,10 +66,7 @@ export function VendorsTab() {
         <div className="grid gap-3 sm:grid-cols-2">
           {vendors.map((vendor) => (
             <Card key={vendor.id} className="flex flex-col gap-2">
-              <button
-                onClick={() => setOpenId(vendor.id)}
-                className="focus-ring text-left"
-              >
+              <button onClick={() => setOpenId(vendor.id)} className="focus-ring text-left">
                 <div className="flex items-start justify-between gap-2">
                   <span className="font-display text-[15px] font-bold text-ink">{vendor.name}</span>
                   {vendor.status === "BOOKED" || vendor.status === "PAID" ? (
@@ -68,7 +76,9 @@ export function VendorsTab() {
                   )}
                 </div>
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-ink-soft">
-                  {vendor.event ? <EventChip slug={vendor.event.slug} name={vendor.event.name} /> : null}
+                  {vendor.event ? (
+                    <EventChip slug={vendor.event.slug} name={vendor.event.name} />
+                  ) : null}
                   {vendor.category ? <span>{vendor.category.name}</span> : null}
                 </div>
                 <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-ink-soft">
@@ -150,7 +160,12 @@ function AddVendorSheet({
   }
 
   return (
-    <Sheet open={open} onClose={onClose} title="Add a vendor" className="max-h-[92vh] overflow-y-auto">
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="Add a vendor"
+      className="max-h-[92vh] overflow-y-auto"
+    >
       <div className="flex flex-col gap-3">
         <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} />
         <div className="grid grid-cols-2 gap-3">
@@ -162,7 +177,11 @@ function AddVendorSheet({
               </option>
             ))}
           </Select>
-          <Select label="Category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+          <Select
+            label="Category"
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+          >
             <option value="">No category</option>
             {catalog.categories.map((c) => (
               <option key={c.id} value={c.id}>

@@ -1,24 +1,34 @@
 import { signInGoogleAction } from "@/lib/actions/auth-actions";
-import { Button } from "@/components/ui";
+import { Button, JINA_LIST, KangaBand } from "@/components/ui";
 import { DevLoginButton } from "@/components/auth/DevLoginButton";
 
 const appName = process.env.APP_NAME ?? "Harusi";
 
-export default async function LoginPage({
-  searchParams,
-}: PageProps<"/login">) {
+/**
+ * Login (DESIGN.md §6): the wordmark, the app's motto proverb (§5.5 #1),
+ * one line about the wedding, and Google. A non-allowlisted account is
+ * turned away in the app's own words, not an auth error code.
+ */
+export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const params = await searchParams;
   const hasError = Boolean(params?.error);
   const devEmail = process.env.NODE_ENV !== "production" ? process.env.DEV_LOGIN_EMAIL : undefined;
+  const motto = JINA_LIST[0];
 
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-6 text-center">
-      <p className="wordmark text-[56px] leading-none text-ink">{appName}</p>
-      <p className="jina-text">Mali bila daftari hupotea bila habari</p>
+      <KangaBand className="max-w-[220px]" />
+
+      <div className="flex flex-col items-center gap-3">
+        <p className="wordmark text-[56px] leading-none text-ink">{appName}</p>
+        <p className="jina-text">{motto.swahili}</p>
+        <p className="text-xs text-ink-soft">{motto.translation}</p>
+      </div>
+
       <p className="text-sm text-ink-soft">Annette &amp; Simi · Nairobi · August 2027</p>
 
       {hasError ? (
-        <p className="rounded-lg bg-sunken px-4 py-3 text-sm text-danger">
+        <p className="rounded-lg border-[1.5px] border-danger px-4 py-3 text-sm text-danger">
           This app is just for the two of them.
         </p>
       ) : null}
@@ -30,6 +40,8 @@ export default async function LoginPage({
       </form>
 
       {devEmail ? <DevLoginButton email={devEmail} /> : null}
+
+      <KangaBand className="max-w-[220px]" />
     </div>
   );
 }

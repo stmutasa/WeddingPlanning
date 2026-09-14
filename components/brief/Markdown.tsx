@@ -32,7 +32,7 @@ function blocks(source: string): ReactNode[] {
       out.push(
         <h3 key={key++} className="font-display text-[15px] font-bold text-ink">
           {inline(line.slice(4))}
-        </h3>
+        </h3>,
       );
       index++;
       continue;
@@ -40,9 +40,12 @@ function blocks(source: string): ReactNode[] {
 
     if (line.startsWith("## ")) {
       out.push(
-        <h2 key={key++} className="mt-3 font-display text-[19px] font-bold tracking-[-0.02em] text-ink">
+        <h2
+          key={key++}
+          className="mt-3 font-display text-[19px] font-bold tracking-[-0.02em] text-ink"
+        >
           {inline(line.slice(3))}
-        </h2>
+        </h2>,
       );
       index++;
       continue;
@@ -52,7 +55,7 @@ function blocks(source: string): ReactNode[] {
       out.push(
         <h1 key={key++} className="font-display text-[24px] font-bold tracking-[-0.02em] text-ink">
           {inline(line.slice(2))}
-        </h1>
+        </h1>,
       );
       index++;
       continue;
@@ -76,7 +79,7 @@ function blocks(source: string): ReactNode[] {
           className="border-l-2 border-line pl-3 text-sm italic text-ink-soft"
         >
           {inline(quote.join(" "))}
-        </blockquote>
+        </blockquote>,
       );
       continue;
     }
@@ -102,7 +105,7 @@ function blocks(source: string): ReactNode[] {
           {items.map((item, i) => (
             <li key={i}>{inline(item)}</li>
           ))}
-        </ul>
+        </ul>,
       );
       continue;
     }
@@ -118,7 +121,7 @@ function blocks(source: string): ReactNode[] {
           {items.map((item, i) => (
             <li key={i}>{inline(item)}</li>
           ))}
-        </ol>
+        </ol>,
       );
       continue;
     }
@@ -139,7 +142,7 @@ function blocks(source: string): ReactNode[] {
     out.push(
       <p key={key++} className="text-[15px] leading-relaxed text-ink">
         {inline(paragraph.join(" "))}
-      </p>
+      </p>,
     );
   }
 
@@ -154,7 +157,7 @@ function renderTable(rows: string[], key: number): ReactNode {
         .replace(/^\|/, "")
         .replace(/\|$/, "")
         .split("|")
-        .map((cell) => cell.trim())
+        .map((cell) => cell.trim()),
     );
   if (cells.length === 0) return null;
   const [header, ...body] = cells;
@@ -202,13 +205,13 @@ function inline(text: string): ReactNode[] {
       parts.push(
         <strong key={key++} className="font-semibold">
           {token.slice(2, -2)}
-        </strong>
+        </strong>,
       );
     } else if (token.startsWith("`")) {
       parts.push(
         <code key={key++} className="rounded bg-sunken px-1 py-0.5 text-[13px]">
           {token.slice(1, -1)}
-        </code>
+        </code>,
       );
     } else {
       parts.push(<em key={key++}>{token.slice(1, -1)}</em>);

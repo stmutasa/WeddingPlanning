@@ -407,32 +407,30 @@ export interface AiModelsDto {
   anthropic: ModelInfoDto[];
   fetchedAt: string | null;
   errors: { openai?: string | null; anthropic?: string | null } | Record<string, string | null>;
-  primary: { provider: AiProvider; model: string };
-  backup: { provider: AiProvider; model: string };
+  primary: { provider: AiProvider; model: string } | null;
+  backup: { provider: AiProvider; model: string } | null;
   resolvedFrom: string;
   problem: string | null;
   enabled: boolean;
 }
 
+export interface UsageRowDto {
+  /** The feature name or the model id, depending on the breakdown. */
+  key: string;
+  calls: number;
+  inputTokens: number;
+  outputTokens: number;
+  cachedTokens: number;
+  /** null wherever a model has no rate on file — shown as "n/a". */
+  costMicros: number | null;
+}
+
 export interface AiUsageDto {
   window: string;
-  since: string | null;
-  totals: { calls: number; inputTokens: number; outputTokens: number; costMicros: number | null };
-  byFeature: {
-    feature: string;
-    calls: number;
-    inputTokens: number;
-    outputTokens: number;
-    costMicros: number | null;
-  }[];
-  byModel: {
-    provider: string;
-    model: string;
-    calls: number;
-    inputTokens: number;
-    outputTokens: number;
-    costMicros: number | null;
-  }[];
+  since: string;
+  totals: UsageRowDto;
+  byFeature: UsageRowDto[];
+  byModel: UsageRowDto[];
   fellBackCalls: number;
   unpricedCalls: number;
 }

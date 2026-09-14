@@ -6,7 +6,16 @@ import { ApiError, apiPost, fetcher } from "@/lib/api";
 import { useMe } from "@/lib/hooks";
 import { longDate, relativeShort } from "@/lib/dates";
 import type { BriefDto } from "@/lib/api-types";
-import { Button, Card, EmptyState, PageHeader, SectionLabel, Skeleton, Toggle, useToast } from "@/components/ui";
+import {
+  Button,
+  Card,
+  EmptyState,
+  PageHeader,
+  SectionLabel,
+  Skeleton,
+  Toggle,
+  useToast,
+} from "@/components/ui";
 import { Banner, ConfirmDialog } from "@/components/common";
 import { Markdown } from "./Markdown";
 
@@ -95,7 +104,9 @@ export function BriefScreen() {
       <PageHeader
         title="Brief"
         subtitle={
-          data ? `${data.words} words · ${relativeShort(data.generatedAt)} old` : "The daily document"
+          data
+            ? `${data.words} words · ${relativeShort(data.generatedAt)} old`
+            : "The daily document"
         }
       />
 
@@ -105,8 +116,8 @@ export function BriefScreen() {
           The Brief is everything this app knows about the wedding, written out as one document and
           regenerated nightly. Copy it into a fresh ChatGPT or Claude conversation — or paste the
           link below, which serves the same markdown — and that chat can answer questions about the
-          budget, the vendors, the guests and the tasks without any access to the app itself.
-          Anyone with the link can read it, so rotate it if it ever goes somewhere it should not.
+          budget, the vendors, the guests and the tasks without any access to the app itself. Anyone
+          with the link can read it, so rotate it if it ever goes somewhere it should not.
         </p>
       </Card>
 

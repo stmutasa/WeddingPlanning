@@ -130,7 +130,11 @@ export function NotesTab() {
               label: k.charAt(0) + k.slice(1).toLowerCase(),
             }))}
           />
-          <Input label="Title (optional)" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <Input
+            label="Title (optional)"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
           <Textarea label="Note" rows={5} value={body} onChange={(e) => setBody(e.target.value)} />
           <Button onClick={save} disabled={saving || !body.trim()}>
             {saving ? "Saving…" : "Save note"}

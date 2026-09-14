@@ -48,11 +48,11 @@ export function TimelineTab() {
 
       <ol className="flex flex-col">
         {months.map((month, index) => {
-          const monthMilestones = milestones.filter((task) =>
-            (task.dueDate ?? "").slice(0, 7) === month
+          const monthMilestones = milestones.filter(
+            (task) => (task.dueDate ?? "").slice(0, 7) === month,
           );
           const monthPayments = payments.data!.filter(
-            (payment) => payment.dueDate.slice(0, 7) === month
+            (payment) => payment.dueDate.slice(0, 7) === month,
           );
           const isCurrent = index === 0;
           const isWeddingMonth = month === lastMonth;
@@ -64,7 +64,8 @@ export function TimelineTab() {
                   aria-hidden
                   className="mt-3 h-3 w-3 shrink-0 rounded-full"
                   style={{
-                    backgroundColor: isCurrent || isWeddingMonth ? "var(--highlight)" : "var(--line)",
+                    backgroundColor:
+                      isCurrent || isWeddingMonth ? "var(--highlight)" : "var(--line)",
                   }}
                 />
                 {index < months.length - 1 ? (
@@ -88,7 +89,10 @@ export function TimelineTab() {
                         <SectionLabel>Milestones</SectionLabel>
                         <ul className="flex flex-col gap-1">
                           {monthMilestones.map((task) => (
-                            <li key={task.id} className="flex flex-wrap items-center gap-2 text-sm text-ink">
+                            <li
+                              key={task.id}
+                              className="flex flex-wrap items-center gap-2 text-sm text-ink"
+                            >
                               <span>{task.title}</span>
                               {task.event ? (
                                 <EventChip slug={task.event.slug} name={task.event.name} />
@@ -132,8 +136,8 @@ export function TimelineTab() {
       </ol>
 
       <p className="text-xs text-ink-soft">
-        <NeutralBadge>note</NeutralBadge> Months run in {wedding.eventTimezone.replace("_", " ")} for
-        the wedding date, and in your own zone for everything else.
+        <NeutralBadge>note</NeutralBadge> Months run in {wedding.eventTimezone.replace("_", " ")}{" "}
+        for the wedding date, and in your own zone for everything else.
       </p>
     </div>
   );

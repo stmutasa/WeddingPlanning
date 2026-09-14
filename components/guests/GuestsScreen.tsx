@@ -18,7 +18,13 @@ import {
   Textarea,
   useToast,
 } from "@/components/ui";
-import { Banner, CsvImportSheet, NeutralBadge, RowsSkeleton, asEventSlug } from "@/components/common";
+import {
+  Banner,
+  CsvImportSheet,
+  NeutralBadge,
+  RowsSkeleton,
+  asEventSlug,
+} from "@/components/common";
 
 /** Tapping an RSVP chip walks this loop (DESIGN.md §6 Guests). */
 const CYCLE: RsvpStatus[] = ["NOT_INVITED", "INVITED", "YES", "MAYBE", "NO"];
@@ -35,11 +41,11 @@ export function GuestsScreen() {
   const [q, setQ] = useState("");
   const { data, mutate } = useSWR<GuestDto[]>(
     `/api/guests${q.trim() ? `?q=${encodeURIComponent(q.trim())}` : ""}`,
-    fetcher
+    fetcher,
   );
   const counts = useSWR<{ counts: GuestCountsDto; pendingHouseholds: string[] }>(
     "/api/guests/counts",
-    fetcher
+    fetcher,
   );
   const catalog = useCatalog();
   const { toast } = useToast();
@@ -267,7 +273,7 @@ function GuestForm({
   const [dietary, setDietary] = useState(guest?.dietary ?? "");
   const [notes, setNotes] = useState(guest?.notes ?? "");
   const [rsvps, setRsvps] = useState<Record<string, RsvpStatus>>(() =>
-    Object.fromEntries((guest?.events ?? []).map((link) => [link.eventId, link.rsvp]))
+    Object.fromEntries((guest?.events ?? []).map((link) => [link.eventId, link.rsvp])),
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -297,7 +303,8 @@ function GuestForm({
         : await apiPost<GuestDto>("/api/guests", body);
 
       for (const [eventId, rsvp] of Object.entries(rsvps)) {
-        const before = guest?.events.find((link) => link.eventId === eventId)?.rsvp ?? "NOT_INVITED";
+        const before =
+          guest?.events.find((link) => link.eventId === eventId)?.rsvp ?? "NOT_INVITED";
         if (before !== rsvp) {
           await apiPatch(`/api/guests/${saved.id}/events`, { eventId, rsvp });
         }
@@ -328,7 +335,11 @@ function GuestForm({
     <div className="flex flex-col gap-3">
       {error ? <Banner tone="danger">{error}</Banner> : null}
       <div className="grid grid-cols-2 gap-3">
-        <Input label="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+        <Input
+          label="First name"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
         <Input label="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
       </div>
       <Input label="Household" value={household} onChange={(e) => setHousehold(e.target.value)} />
