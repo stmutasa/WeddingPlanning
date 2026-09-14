@@ -1,12 +1,17 @@
-import type { Activity } from "@prisma/client";
-import { NotImplemented } from "./errors";
+import type { Prisma } from "@prisma/client";
+import { db } from "@/lib/db";
 
-/**
- * The Phase B service — will likely just wrap db.activity.findMany with the
- * same shape app/api/activity already returns directly. The lightweight
- * `lib/activity.ts` helper (used by every route today to append a row) is
- * intentionally separate and already implemented; it stays once this lands.
- */
-export async function recent(_n: number): Promise<Activity[]> {
-  throw new NotImplemented("activity.recent");
+const RELATIONS = {
+  user: { select: { id: true, name: true, settings: { select: { displayName: true, hue: true } } } },
+} satisfies Prisma.ActivityInclude;
+
+export type ActivityRow = Prisma.ActivityGetPayload<{ include: typeof RELATIONS }>;
+
+/** DESIGN.md §4 — the shared feed the Home screen and the Brief both read. */
+export async function recent(n = 25): Promise<ActivityRow[]> {
+  return db.activity.findMany({
+    include: RELATIONS,
+    orderBy: { createdAt: "desc" },
+    take: Math.min(Math.max(n, 1), 200),
+  });
 }

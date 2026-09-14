@@ -57,8 +57,15 @@ export type RsvpStatus = (typeof RSVP_STATUSES)[number];
 export const GUEST_SIDES = ["BRIDE", "GROOM", "BOTH"] as const;
 export type GuestSide = (typeof GUEST_SIDES)[number];
 
-export const NOTE_KINDS = ["NOTE", "DECISION", "IDEA", "QUESTION"] as const;
+// DIGEST is written by the weekly digest job (DESIGN.md §4) so the Home
+// card can read the latest one back without a table of its own; it is not
+// offered as a kind in the Notes UI.
+export const NOTE_KINDS = ["NOTE", "DECISION", "IDEA", "QUESTION", "DIGEST"] as const;
 export type NoteKind = (typeof NOTE_KINDS)[number];
+
+/** The kinds a person can pick in the Notes screen. */
+export const USER_NOTE_KINDS = ["NOTE", "DECISION", "IDEA", "QUESTION"] as const;
+export type UserNoteKind = (typeof USER_NOTE_KINDS)[number];
 
 export const CHAT_ROLES = ["user", "assistant", "tool"] as const;
 export type ChatRole = (typeof CHAT_ROLES)[number];
