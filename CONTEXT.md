@@ -42,7 +42,7 @@ Lineage: Simi's earlier apps. **Kindred** (Next.js + Prisma/SQLite + Auth.js Goo
 
 ## 3. Open items
 
-0. **Go-live checklist** is in README.md. Nothing below blocks development; all of it blocks production use.
+0. **Go-live walkthrough** is in `docs/GO-LIVE.md` (linked from README). Nothing below blocks development; all of it blocks production use.
 
 1. **Exact OpenAI model id.** Resolved at runtime by matching `astra` against the live list. If the real id does not contain "astra", set `AI_MODEL` explicitly or pick it in Settings.
 2. **Proverb wording** in DESIGN.md §5.5: Annette to confirm.

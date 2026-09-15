@@ -327,14 +327,11 @@ Screen**, and launch the app from that icon before enabling notifications in Set
 Android/Chrome supports push from a regular browser tab too, but installing still gives the
 full-screen app experience.
 
-## Go-live checklist (Simi)
+## Going live
 
-Everything below is configuration the code cannot supply. Until each is done, the matching feature degrades cleanly and says so in the app.
+The full walkthrough, written for someone who has never deployed anything, is in
+[**docs/GO-LIVE.md**](./docs/GO-LIVE.md). It covers, in order: Railway hosting and the storage
+disk, Google sign-in, the two AI keys, generating the app's own secrets, Plaid (optional),
+a check of every feature, and installing the app on an Android phone and an iPhone.
 
-1. **Railway**: new project from this repo, add a Volume mounted at `/data`, set `DATABASE_URL=file:/data/app.db` and `UPLOAD_DIR=/data/uploads`, generate a domain, set `AUTH_URL=https://<domain>`.
-2. **Google OAuth**: a Web application client with redirect `https://<domain>/api/auth/callback/google` (and `http://localhost:3000/api/auth/callback/google` for dev); set `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`; `AUTH_SECRET` from `openssl rand -base64 32`. `ALLOWED_EMAILS` already lists the two of you. Publish the consent screen to Production so refresh tokens do not expire weekly.
-3. **AI keys**: `OPENAI_API_KEY` and `ANTHROPIC_API_KEY`. Leave `AI_MODEL` blank and `AI_MODEL_MATCH=astra` to auto-resolve the newest matching OpenAI model (the installed SDK already lists `gpt-6-astra`), or set `AI_MODEL` explicitly. Check Settings › AI shows the resolved id. Then run `npm run seed -- --demo && npm run eval` once to see quick-add and receipt accuracy against `docs/eval/`.
-4. **Plaid**: `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV=sandbox` to try it, `production` after Plaid approves the application. US institutions only; Kenyan payments come in via receipt scan or CSV.
-5. **Push**: `npm run vapid` and set the three VAPID variables. Annette must Add to Home Screen on iPhone before enabling notifications.
-6. **Encryption**: `APP_ENCRYPTION_KEY` from `openssl rand -base64 32` (Plaid tokens at rest).
-7. Optional: `FEATURE_DRIVE_BRIEF=true` to sync the Brief to Google Drive.
+Until each step is done the matching feature degrades cleanly and says so in the app.
