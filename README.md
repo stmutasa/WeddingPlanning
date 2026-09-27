@@ -334,4 +334,7 @@ The full walkthrough, written for someone who has never deployed anything, is in
 disk, Google sign-in, the two AI keys, generating the app's own secrets, Plaid (optional),
 a check of every feature, and installing the app on an Android phone and an iPhone.
 
+To have Claude in Chrome do most of it for you, paste the prompts in
+[**docs/GO-LIVE-BROWSER.md**](./docs/GO-LIVE-BROWSER.md) one at a time.
+
 Until each step is done the matching feature degrades cleanly and says so in the app.

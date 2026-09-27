@@ -1,5 +1,7 @@
 # Putting Harusi online, step by step
 
+> **Prefer to have Claude in Chrome click through this for you?** Use the ready-made prompts in [GO-LIVE-BROWSER.md](./GO-LIVE-BROWSER.md). You still sign in, handle billing, and install on the phones yourself.
+
 This is the walkthrough for turning the code in this repository into a working app on your phones. It assumes you have never deployed anything before. Budget about an hour, plus waiting time for Plaid if you want the bank feed.
 
 **What you will need before you start**
